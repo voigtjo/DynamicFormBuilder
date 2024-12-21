@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Row from './Row'; // Import Row component
-import { Box, Button } from '@mui/material'; // Import Material UI components
+import { Box, Button, IconButton } from '@mui/material'; // Import Material UI components
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import ClearIcon from '@mui/icons-material/Clear';
 
 const LayoutEditor = ({ layout, setLayout }) => {
+  const [selectedWebpartId, setSelectedWebpartId] = useState(null); // Track selected webpart
+
   const addRow = (position = 'end', targetRowId = null) => {
     const newRow = {
       rowId: `row-${Date.now()}`,
@@ -23,12 +32,49 @@ const LayoutEditor = ({ layout, setLayout }) => {
     setLayout({ ...layout, rows: updatedRows });
   };
 
-  const moveWebpart = (rowId, webpartId, direction) => {
-    const sourceRowIndex = layout.rows.findIndex((row) => row.rowId === rowId);
+  const addWebpartRight = () => {
+    if (!selectedWebpartId) return;
+
+    const sourceRowIndex = layout.rows.findIndex((row) =>
+      row.webparts.some((wp) => wp.id === selectedWebpartId)
+    );
     if (sourceRowIndex === -1) return;
 
     const sourceRow = layout.rows[sourceRowIndex];
-    const webpartIndex = sourceRow.webparts.findIndex((wp) => wp.id === webpartId);
+    const webpartIndex = sourceRow.webparts.findIndex((wp) => wp.id === selectedWebpartId);
+
+    const newWebpart = {
+      id: `webpart-${Date.now()}`,
+      type: 'text',
+      position: { row: sourceRow.rowId, col: webpartIndex + 1 },
+      label: '',
+      elements: [],
+    };
+
+    const updatedWebparts = [
+      ...sourceRow.webparts.slice(0, webpartIndex + 1),
+      newWebpart,
+      ...sourceRow.webparts.slice(webpartIndex + 1),
+    ];
+
+    const updatedRow = { ...sourceRow, webparts: updatedWebparts };
+    const updatedRows = layout.rows.map((row, index) =>
+      index === sourceRowIndex ? updatedRow : row
+    );
+
+    setLayout({ ...layout, rows: updatedRows });
+  };
+
+  const moveWebpart = (direction) => {
+    if (!selectedWebpartId) return;
+
+    const sourceRowIndex = layout.rows.findIndex((row) =>
+      row.webparts.some((wp) => wp.id === selectedWebpartId)
+    );
+    if (sourceRowIndex === -1) return;
+
+    const sourceRow = layout.rows[sourceRowIndex];
+    const webpartIndex = sourceRow.webparts.findIndex((wp) => wp.id === selectedWebpartId);
     if (webpartIndex === -1) return;
 
     const webpart = sourceRow.webparts[webpartIndex];
@@ -65,17 +111,50 @@ const LayoutEditor = ({ layout, setLayout }) => {
     setLayout({ ...layout, rows: updatedRows.filter((row) => row.webparts.length > 0) });
   };
 
+  const deleteSelectedWebpart = () => {
+    if (!selectedWebpartId) return;
+
+    const updatedRows = layout.rows.map((row) => ({
+      ...row,
+      webparts: row.webparts.filter((wp) => wp.id !== selectedWebpartId),
+    }));
+
+    setLayout({ ...layout, rows: updatedRows });
+    setSelectedWebpartId(null); // Clear selection
+  };
+
   return (
     <Box>
-      <Button
-        variant="contained"
-        color="success"
-        onClick={() => addRow('top')}
-        sx={{ display: 'block', margin: '10px auto' }}
-      >
-        + Add Row (Top)
-      </Button>
+      {/* Button Row */}
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, marginBottom: 2 }}>
+        <IconButton onClick={addWebpartRight} disabled={!selectedWebpartId} color="primary">
+          <AddIcon />
+        </IconButton>
+        <IconButton onClick={() => moveWebpart('left')} disabled={!selectedWebpartId}>
+          <ArrowBackIcon />
+        </IconButton>
+        <IconButton onClick={() => moveWebpart('right')} disabled={!selectedWebpartId}>
+          <ArrowForwardIcon />
+        </IconButton>
+        <IconButton onClick={() => moveWebpart('up')} disabled={!selectedWebpartId}>
+          <ArrowUpwardIcon />
+        </IconButton>
+        <IconButton onClick={() => moveWebpart('down')} disabled={!selectedWebpartId}>
+          <ArrowDownwardIcon />
+        </IconButton>
+        <IconButton
+          onClick={deleteSelectedWebpart}
+          disabled={!selectedWebpartId}
+          color="error"
+        >
+          <DeleteIcon />
+        </IconButton>
+        <IconButton onClick={() => setSelectedWebpartId(null)} disabled={!selectedWebpartId}>
+          <ClearIcon />
+        </IconButton>
+      </Box>
 
+      {/* Rows */}
       {layout.rows.map((row, rowIndex) => (
         <Row
           key={row.rowId}
@@ -93,18 +172,10 @@ const LayoutEditor = ({ layout, setLayout }) => {
             setLayout({ ...layout, rows: updatedRows });
           }}
           addRowBelow={(targetRowId) => addRow('below', targetRowId)}
-          moveWebpart={moveWebpart}
+          selectWebpart={setSelectedWebpartId}
+          selectedWebpartId={selectedWebpartId}
         />
       ))}
-
-      <Button
-        variant="contained"
-        color="success"
-        onClick={() => addRow('end')}
-        sx={{ display: 'block', margin: '10px auto' }}
-      >
-        + Add Row (Bottom)
-      </Button>
     </Box>
   );
 };

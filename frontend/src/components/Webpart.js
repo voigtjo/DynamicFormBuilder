@@ -1,100 +1,33 @@
 import React from 'react';
-import { Box, IconButton, TextField } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import { Box, TextField } from '@mui/material';
 
-const Webpart = ({
-  webpart,
-  updateWebpart,
-  deleteWebpart,
-  moveWebpart,
-  canMoveLeft,
-  canMoveRight,
-  canMoveUp,
-  canMoveDown,
-}) => {
+const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
   const handleLabelChange = (e) => {
     updateWebpart({ ...webpart, label: e.target.value });
   };
 
   return (
     <Box
+      onClick={() => selectWebpart(webpart.id)}
       sx={{
         position: 'relative',
-        border: '1px solid #ccc',
+        border: isSelected ? '2px solid blue' : '1px solid #ccc',
         borderRadius: '8px',
         padding: 2,
-        backgroundColor: '#f9f9f9',
+        backgroundColor: isSelected ? '#e3f2fd' : '#f9f9f9',
         margin: 1,
         boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+        cursor: 'pointer',
       }}
     >
-      {/* Editable Label */}
       <TextField
         label="Label"
         variant="outlined"
         size="small"
         value={webpart.label || ''}
         onChange={handleLabelChange}
-        sx={{
-          marginBottom: 1,
-          width: '100%',
-          backgroundColor: '#fff',
-        }}
+        sx={{ marginBottom: 1, width: '100%' }}
       />
-
-      {/* Movement Controls */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 1 }}>
-        <Box>
-          <IconButton
-            size="small"
-            onClick={() => moveWebpart('left')}
-            disabled={!canMoveLeft}
-          >
-            <ArrowBackIcon />
-          </IconButton>
-          <IconButton
-            size="small"
-            onClick={() => moveWebpart('right')}
-            disabled={!canMoveRight}
-          >
-            <ArrowForwardIcon />
-          </IconButton>
-        </Box>
-        <Box>
-          <IconButton
-            size="small"
-            onClick={() => moveWebpart('up')}
-            disabled={!canMoveUp}
-          >
-            <ArrowUpwardIcon />
-          </IconButton>
-          <IconButton
-            size="small"
-            onClick={() => moveWebpart('down')}
-            disabled={!canMoveDown}
-          >
-            <ArrowDownwardIcon />
-          </IconButton>
-        </Box>
-      </Box>
-
-      {/* Delete Webpart Button */}
-      <IconButton
-        onClick={() => deleteWebpart(webpart.id)}
-        sx={{
-          position: 'absolute',
-          top: 4,
-          right: 4,
-        }}
-        size="small"
-        color="error"
-      >
-        <DeleteIcon />
-      </IconButton>
     </Box>
   );
 };
