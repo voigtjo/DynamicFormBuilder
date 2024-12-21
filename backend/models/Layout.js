@@ -1,25 +1,27 @@
 const mongoose = require('mongoose');
 
+// Define the Webpart schema
 const WebpartSchema = new mongoose.Schema({
   id: { type: String, required: true },
   type: { type: String, required: true },
   position: {
-    row: { type: Number, required: true, default: 0 }, // Default row
-    col: { type: Number, required: true, default: 0 }, // Default col
+    row: { type: String, required: true }, // Use String for row ID
+    col: { type: Number, required: true }, // Numeric column position
   },
-  label: { type: String, default: '' },
+  label: { type: String },
   elements: { type: Array, default: [] },
 });
 
-
+// Define the Row schema
 const RowSchema = new mongoose.Schema({
   rowId: { type: String, required: true },
-  webparts: [WebpartSchema], // Use the updated Webpart schema
+  webparts: [WebpartSchema], // Use the Webpart schema here
 });
 
+// Define the Layout schema
 const LayoutSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  rows: [RowSchema], // Use the updated Row schema
+  rows: [RowSchema], // Use the Row schema here
 });
 
 module.exports = mongoose.model('Layout', LayoutSchema);

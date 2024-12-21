@@ -53,7 +53,29 @@ const LayoutEditor = ({ layout, setLayout }) => {
   
     setLayout({ ...layout, rows: updatedRows });
   };
-  
+
+  const addWebpartToRow = (rowId) => {
+    const newWebpart = {
+      id: `webpart-${Date.now()}`,
+      type: 'text', // Default type
+      position: null, // Position will be managed dynamically
+      label: 'New Webpart',
+      elements: [],
+    };
+
+    const updatedRows = layout.rows.map((row) => {
+      if (row.rowId === rowId) {
+        return {
+          ...row,
+          webparts: [...row.webparts, newWebpart],
+        };
+      }
+      return row;
+    });
+
+    setLayout({ ...layout, rows: updatedRows });
+  };
+
   {layout.rows.map((row) => (
     <Row
       key={row.rowId}
@@ -223,6 +245,7 @@ const LayoutEditor = ({ layout, setLayout }) => {
         }}
         addRowBelow={(targetRowId) => addRow('below', targetRowId)}
         moveRow={moveRow} // Pass moveRow to Row
+        addWebpartToRow={addWebpartToRow} // Pass addWebpartToRow
         selectWebpart={setSelectedWebpartId} // Pass selectWebpart
         selectedWebpartId={selectedWebpartId}
       />
