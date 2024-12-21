@@ -1,24 +1,37 @@
 import React from 'react';
 import Webpart from './Webpart';
-import { Box, Button } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-const Row = ({ row, updateRow, deleteRow, addRowBelow, selectWebpart, selectedWebpartId }) => {
-  const updateWebpart = (updatedWebpart) => {
-    const updatedWebparts = row.webparts.map((wp) =>
-      wp.id === updatedWebpart.id ? updatedWebpart : wp
-    );
-    updateRow({ ...row, webparts: updatedWebparts });
+const Row = ({
+  row,
+  updateRow,
+  deleteRow,
+  addRowBelow,
+  moveRow,
+  selectWebpart, // Receive selectWebpart as a prop
+  selectedWebpartId, // Receive selectedWebpartId as a prop
+  isHighlighted,
+  highlightRow,
+  unhighlightRow,
+}) => {
+  const rowStyle = {
+    border: isHighlighted ? '2px solid #007FFF' : '2px dotted lightgray',
+    backgroundColor: isHighlighted ? '#E3F2FD' : '#fefefe',
+    borderRadius: '8px',
+    padding: 2,
+    marginBottom: 2,
+    transition: 'background-color 0.3s, border-color 0.3s',
   };
 
   return (
     <Box
-      sx={{
-        border: '2px dotted lightgray',
-        borderRadius: '8px',
-        padding: 2,
-        marginBottom: 2,
-        backgroundColor: '#fefefe',
-      }}
+      sx={rowStyle}
+      onMouseEnter={highlightRow} // Highlight row on hover
+      onMouseLeave={unhighlightRow} // Remove highlight on mouse leave
     >
       {/* Webparts */}
       <Box
@@ -32,13 +45,14 @@ const Row = ({ row, updateRow, deleteRow, addRowBelow, selectWebpart, selectedWe
           <Webpart
             key={webpart.id}
             webpart={webpart}
-            updateWebpart={updateWebpart}
-            deleteWebpart={(id) => {
-              const updatedWebparts = row.webparts.filter((wp) => wp.id !== id);
+            updateWebpart={(updatedWebpart) => {
+              const updatedWebparts = row.webparts.map((wp) =>
+                wp.id === updatedWebpart.id ? updatedWebpart : wp
+              );
               updateRow({ ...row, webparts: updatedWebparts });
             }}
-            selectWebpart={selectWebpart}
-            isSelected={webpart.id === selectedWebpartId}
+            selectWebpart={selectWebpart} // Pass selectWebpart to Webpart
+            isSelected={webpart.id === selectedWebpartId} // Highlight if selected
           />
         ))}
       </Box>
@@ -53,12 +67,18 @@ const Row = ({ row, updateRow, deleteRow, addRowBelow, selectWebpart, selectedWe
           gap: 2,
         }}
       >
-        <Button variant="contained" color="success" onClick={() => addRowBelow(row.rowId)}>
-          + Add Row
-        </Button>
-        <Button variant="contained" color="error" onClick={() => deleteRow(row.rowId)}>
-          - Delete Row
-        </Button>
+        <IconButton onClick={() => moveRow(row.rowId, 'up')} color="primary">
+          <ArrowUpwardIcon />
+        </IconButton>
+        <IconButton onClick={() => moveRow(row.rowId, 'down')} color="primary">
+          <ArrowDownwardIcon />
+        </IconButton>
+        <IconButton onClick={() => addRowBelow(row.rowId)} color="success">
+          <AddIcon />
+        </IconButton>
+        <IconButton onClick={() => deleteRow(row.rowId)} color="error">
+          <DeleteIcon />
+        </IconButton>
       </Box>
     </Box>
   );

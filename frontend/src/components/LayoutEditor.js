@@ -11,13 +11,14 @@ import ClearIcon from '@mui/icons-material/Clear';
 
 const LayoutEditor = ({ layout, setLayout }) => {
   const [selectedWebpartId, setSelectedWebpartId] = useState(null); // Track selected webpart
+  const [highlightedRowId, setHighlightedRowId] = useState(null); // New state for highlighting
 
   const addRow = (position = 'end', targetRowId = null) => {
     const newRow = {
       rowId: `row-${Date.now()}`,
       webparts: [],
     };
-
+  
     let updatedRows;
     if (position === 'top') {
       updatedRows = [newRow, ...layout.rows];
@@ -28,9 +29,57 @@ const LayoutEditor = ({ layout, setLayout }) => {
     } else {
       updatedRows = [...layout.rows, newRow];
     }
-
+  
     setLayout({ ...layout, rows: updatedRows });
   };
+  
+
+  const moveRow = (rowId, direction) => {
+    const rowIndex = layout.rows.findIndex((row) => row.rowId === rowId);
+    if (rowIndex === -1) return;
+  
+    let updatedRows = [...layout.rows];
+    if (direction === 'up' && rowIndex > 0) {
+      [updatedRows[rowIndex - 1], updatedRows[rowIndex]] = [
+        updatedRows[rowIndex],
+        updatedRows[rowIndex - 1],
+      ];
+    } else if (direction === 'down' && rowIndex < updatedRows.length - 1) {
+      [updatedRows[rowIndex + 1], updatedRows[rowIndex]] = [
+        updatedRows[rowIndex],
+        updatedRows[rowIndex + 1],
+      ];
+    }
+  
+    setLayout({ ...layout, rows: updatedRows });
+  };
+  
+  {layout.rows.map((row) => (
+    <Row
+      key={row.rowId}
+      row={row}
+      isHighlighted={highlightedRowId === row.rowId} // Correct usage
+      highlightRow={() => setHighlightedRowId(row.rowId)} // Highlight this row
+      unhighlightRow={() => setHighlightedRowId(null)} // Unhighlight this row
+      updateRow={(updatedRow) => {
+        const updatedRows = layout.rows.map((r) =>
+          r.rowId === updatedRow.rowId ? updatedRow : r
+        );
+        setLayout({ ...layout, rows: updatedRows });
+      }}
+      deleteRow={(rowId) => {
+        const updatedRows = layout.rows.filter((r) => r.rowId !== rowId);
+        setLayout({ ...layout, rows: updatedRows });
+      }}
+      addRowBelow={(targetRowId) => addRow('below', targetRowId)} // Correctly reference addRow
+      moveRow={moveRow}
+      selectWebpart={setSelectedWebpartId}
+      selectedWebpartId={selectedWebpartId}
+    />
+  ))}
+  
+  
+  
 
   const addWebpartRight = () => {
     if (!selectedWebpartId) return;
@@ -157,24 +206,27 @@ const LayoutEditor = ({ layout, setLayout }) => {
       {/* Rows */}
       {layout.rows.map((row, rowIndex) => (
         <Row
-          key={row.rowId}
-          row={row}
-          rowIndex={rowIndex}
-          totalRows={layout.rows.length}
-          updateRow={(updatedRow) => {
-            const updatedRows = layout.rows.map((r) =>
-              r.rowId === updatedRow.rowId ? updatedRow : r
-            );
-            setLayout({ ...layout, rows: updatedRows });
-          }}
-          deleteRow={(rowId) => {
-            const updatedRows = layout.rows.filter((r) => r.rowId !== rowId);
-            setLayout({ ...layout, rows: updatedRows });
-          }}
-          addRowBelow={(targetRowId) => addRow('below', targetRowId)}
-          selectWebpart={setSelectedWebpartId}
-          selectedWebpartId={selectedWebpartId}
-        />
+        key={row.rowId}
+        row={row}
+        isHighlighted={highlightedRowId === row.rowId} // Highlight condition
+        highlightRow={() => setHighlightedRowId(row.rowId)} // Highlight this row
+        unhighlightRow={() => setHighlightedRowId(null)} // Unhighlight the row
+        updateRow={(updatedRow) => {
+          const updatedRows = layout.rows.map((r) =>
+            r.rowId === updatedRow.rowId ? updatedRow : r
+          );
+          setLayout({ ...layout, rows: updatedRows });
+        }}
+        deleteRow={(rowId) => {
+          const updatedRows = layout.rows.filter((r) => r.rowId !== rowId);
+          setLayout({ ...layout, rows: updatedRows });
+        }}
+        addRowBelow={(targetRowId) => addRow('below', targetRowId)}
+        moveRow={moveRow} // Pass moveRow to Row
+        selectWebpart={setSelectedWebpartId} // Pass selectWebpart
+        selectedWebpartId={selectedWebpartId}
+      />
+      
       ))}
     </Box>
   );

@@ -6,15 +6,21 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
     updateWebpart({ ...webpart, label: e.target.value });
   };
 
+  const handleClick = () => {
+    if (selectWebpart) {
+      selectWebpart(webpart.id); // Set the selected webpart ID
+    }
+  };
+
   return (
     <Box
-      onClick={() => selectWebpart(webpart.id)}
+      onClick={handleClick} // Highlight when clicked
       sx={{
         position: 'relative',
         border: isSelected ? '2px solid blue' : '1px solid #ccc',
         borderRadius: '8px',
         padding: 2,
-        backgroundColor: isSelected ? '#e3f2fd' : '#f9f9f9',
+        backgroundColor: isSelected ? '#E3F2FD' : '#f9f9f9',
         margin: 1,
         boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
         cursor: 'pointer',
