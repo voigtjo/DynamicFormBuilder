@@ -17,7 +17,7 @@ const Row = ({
     backgroundColor: isHighlighted ? '#E3F2FD' : '#fefefe',
     borderRadius: '8px',
     padding: 0.5,
-    marginBottom: 1, 
+    marginBottom: 0, 
     transition: 'background-color 0.3s, border-color 0.3s',
   };
 
