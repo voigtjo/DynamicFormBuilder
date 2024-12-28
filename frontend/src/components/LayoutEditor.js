@@ -54,6 +54,13 @@ const LayoutEditor = ({ layout, setLayout }) => {
     setLayout({ ...layout, rows: updatedRows });
   };
 
+  const deleteRow = (rowId) => {
+    const updatedRows = layout.rows.filter((row) => row.rowId !== rowId);
+    setLayout({ ...layout, rows: updatedRows });
+    setHighlightedRowId(null); // Clear the row selection after deletion
+  };
+  
+
   const addWebpartToRow = (rowId) => {
     const newWebpart = {
       id: `webpart-${Date.now()}`,
@@ -76,7 +83,7 @@ const LayoutEditor = ({ layout, setLayout }) => {
     setLayout({ ...layout, rows: updatedRows });
   };
 
-  {layout.rows.map((row) => (
+  layout.rows.map((row) => (
     <Row
       key={row.rowId}
       row={row}
@@ -98,7 +105,7 @@ const LayoutEditor = ({ layout, setLayout }) => {
       selectWebpart={setSelectedWebpartId}
       selectedWebpartId={selectedWebpartId}
     />
-  ))}
+  ))
   
   
   
@@ -196,34 +203,79 @@ const LayoutEditor = ({ layout, setLayout }) => {
 
   return (
     <Box>
-      {/* Button Row */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, marginBottom: 2 }}>
-        <IconButton onClick={addWebpartRight} disabled={!selectedWebpartId} color="primary">
-          <AddIcon />
-        </IconButton>
-        <IconButton onClick={() => moveWebpart('left')} disabled={!selectedWebpartId}>
-          <ArrowBackIcon />
-        </IconButton>
-        <IconButton onClick={() => moveWebpart('right')} disabled={!selectedWebpartId}>
-          <ArrowForwardIcon />
-        </IconButton>
-        <IconButton onClick={() => moveWebpart('up')} disabled={!selectedWebpartId}>
-          <ArrowUpwardIcon />
-        </IconButton>
-        <IconButton onClick={() => moveWebpart('down')} disabled={!selectedWebpartId}>
-          <ArrowDownwardIcon />
-        </IconButton>
-        <IconButton
-          onClick={deleteSelectedWebpart}
-          disabled={!selectedWebpartId}
-          color="error"
-        >
-          <DeleteIcon />
-        </IconButton>
-        <IconButton onClick={() => setSelectedWebpartId(null)} disabled={!selectedWebpartId}>
-          <ClearIcon />
-        </IconButton>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between', // Add space between left and right controls
+          alignItems: 'center', // Vertically align controls
+          marginBottom: 2,
+        }}
+      >
+        {/* Left-Aligned Row Controls */}
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <IconButton
+            onClick={() => moveRow(highlightedRowId, 'up')}
+            disabled={!highlightedRowId}
+            color="primary"
+          >
+            <ArrowUpwardIcon />
+          </IconButton>
+          <IconButton
+            onClick={() => moveRow(highlightedRowId, 'down')}
+            disabled={!highlightedRowId}
+            color="primary"
+          >
+            <ArrowDownwardIcon />
+          </IconButton>
+          <IconButton
+            onClick={() => addRow('below', highlightedRowId)}
+            disabled={!highlightedRowId}
+            color="success"
+          >
+            <AddIcon />
+          </IconButton>
+          <IconButton
+            onClick={() => deleteRow(highlightedRowId)}
+            disabled={!highlightedRowId}
+            color="error"
+          >
+            <DeleteIcon />
+          </IconButton>
+          <IconButton
+            onClick={() => setHighlightedRowId(null)}
+            disabled={!highlightedRowId}
+            color="secondary"
+          >
+            <ClearIcon />
+          </IconButton>
+        </Box>
+
+        {/* Right-Aligned Webpart Controls */}
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <IconButton onClick={addWebpartRight} disabled={!selectedWebpartId} color="primary">
+            <AddIcon />
+          </IconButton>
+          <IconButton onClick={() => moveWebpart('left')} disabled={!selectedWebpartId}>
+            <ArrowBackIcon />
+          </IconButton>
+          <IconButton onClick={() => moveWebpart('right')} disabled={!selectedWebpartId}>
+            <ArrowForwardIcon />
+          </IconButton>
+          <IconButton onClick={() => moveWebpart('up')} disabled={!selectedWebpartId}>
+            <ArrowUpwardIcon />
+          </IconButton>
+          <IconButton onClick={() => moveWebpart('down')} disabled={!selectedWebpartId}>
+            <ArrowDownwardIcon />
+          </IconButton>
+          <IconButton onClick={deleteSelectedWebpart} disabled={!selectedWebpartId} color="error">
+            <DeleteIcon />
+          </IconButton>
+          <IconButton onClick={() => setSelectedWebpartId(null)} disabled={!selectedWebpartId}>
+            <ClearIcon />
+          </IconButton>
+        </Box>
       </Box>
+
 
       {/* Rows */}
       {layout.rows.map((row, rowIndex) => (
