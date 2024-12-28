@@ -57,23 +57,10 @@ const LayoutEditor = ({ layout, setLayout }) => {
     setLayout({ ...layout, rows: updatedRows });
   };
 
-  const addWebpartToRow = (rowId) => {
-    const newWebpart = {
-      id: `webpart-${Date.now()}`,
-      type: 'text',
-      position: null,
-      label: 'New Webpart',
-      elements: [],
-    };
-    const updatedRows = layout.rows.map((row) =>
-      row.rowId === rowId ? { ...row, webparts: [...row.webparts, newWebpart] } : row
-    );
-    setLayout({ ...layout, rows: updatedRows });
-  };
-
   const moveWebpart = (direction) => {
     if (!selectedWebpartId) return;
 
+    // Find source row and webpart index
     const sourceRowIndex = layout.rows.findIndex((row) =>
       row.webparts.some((wp) => wp.id === selectedWebpartId)
     );
@@ -83,11 +70,10 @@ const LayoutEditor = ({ layout, setLayout }) => {
     const webpartIndex = sourceRow.webparts.findIndex((wp) => wp.id === selectedWebpartId);
     if (webpartIndex === -1) return;
 
-    const webpart = sourceRow.webparts[webpartIndex];
     let updatedRows = [...layout.rows];
 
     if (direction === 'left' && webpartIndex > 0) {
-      // Move within the same row
+      // Move left within the same row
       const updatedWebparts = [...sourceRow.webparts];
       [updatedWebparts[webpartIndex - 1], updatedWebparts[webpartIndex]] = [
         updatedWebparts[webpartIndex],
@@ -95,7 +81,7 @@ const LayoutEditor = ({ layout, setLayout }) => {
       ];
       updatedRows[sourceRowIndex] = { ...sourceRow, webparts: updatedWebparts };
     } else if (direction === 'right' && webpartIndex < sourceRow.webparts.length - 1) {
-      // Move within the same row
+      // Move right within the same row
       const updatedWebparts = [...sourceRow.webparts];
       [updatedWebparts[webpartIndex + 1], updatedWebparts[webpartIndex]] = [
         updatedWebparts[webpartIndex],
@@ -103,15 +89,37 @@ const LayoutEditor = ({ layout, setLayout }) => {
       ];
       updatedRows[sourceRowIndex] = { ...sourceRow, webparts: updatedWebparts };
     } else if (direction === 'up' && sourceRowIndex > 0) {
-      // Move to the row above
+      // Move up to the row above
       const targetRow = updatedRows[sourceRowIndex - 1];
-      targetRow.webparts.push(webpart);
-      sourceRow.webparts.splice(webpartIndex, 1);
-    } else if (direction === 'down' && sourceRowIndex < layout.rows.length - 1) {
-      // Move to the row below
+      const updatedSourceWebparts = sourceRow.webparts.filter(
+        (wp, idx) => idx !== webpartIndex
+      );
+      const updatedTargetWebparts = [...targetRow.webparts, sourceRow.webparts[webpartIndex]];
+
+      updatedRows[sourceRowIndex] = {
+        ...sourceRow,
+        webparts: updatedSourceWebparts,
+      };
+      updatedRows[sourceRowIndex - 1] = {
+        ...targetRow,
+        webparts: updatedTargetWebparts,
+      };
+    } else if (direction === 'down' && sourceRowIndex < updatedRows.length - 1) {
+      // Move down to the row below
       const targetRow = updatedRows[sourceRowIndex + 1];
-      targetRow.webparts.push(webpart);
-      sourceRow.webparts.splice(webpartIndex, 1);
+      const updatedSourceWebparts = sourceRow.webparts.filter(
+        (wp, idx) => idx !== webpartIndex
+      );
+      const updatedTargetWebparts = [...targetRow.webparts, sourceRow.webparts[webpartIndex]];
+
+      updatedRows[sourceRowIndex] = {
+        ...sourceRow,
+        webparts: updatedSourceWebparts,
+      };
+      updatedRows[sourceRowIndex + 1] = {
+        ...targetRow,
+        webparts: updatedTargetWebparts,
+      };
     }
 
     setLayout({ ...layout, rows: updatedRows });
@@ -130,78 +138,133 @@ const LayoutEditor = ({ layout, setLayout }) => {
   };
 
   return (
-    <Box>
+    <Box sx={{ display: 'flex', height: '100vh' }}>
+      {/* Left Sidebar */}
       <Box
         sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 2,
+          width: '200px',
+          backgroundColor: '#f5f5f5',
+          borderRight: '1px solid #ccc',
+          padding: 2,
         }}
       >
-        {/* Left-Aligned Row Controls */}
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <IconButton onClick={() => moveRow(highlightedRowId, 'up')} disabled={!highlightedRowId} color="primary">
-            <ArrowUpwardIcon />
-          </IconButton>
-          <IconButton onClick={() => moveRow(highlightedRowId, 'down')} disabled={!highlightedRowId} color="primary">
-            <ArrowDownwardIcon />
-          </IconButton>
-          <IconButton onClick={() => addRow('below', highlightedRowId)} disabled={!highlightedRowId} color="success">
-            <AddIcon />
-          </IconButton>
-          <IconButton onClick={() => deleteRow(highlightedRowId)} disabled={!highlightedRowId} color="error">
-            <DeleteIcon />
-          </IconButton>
-          <IconButton onClick={() => setHighlightedRowId(null)} disabled={!highlightedRowId} color="secondary">
-            <ClearIcon />
-          </IconButton>
+        <h3>Controls</h3>
+        <p>Drag and drop controls here</p>
+      </Box>
+
+      {/* Main Content */}
+      <Box sx={{ flexGrow: 1, padding: 2 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 2,
+          }}
+        >
+          {/* Left-Aligned Row Controls */}
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <IconButton
+              onClick={() => moveRow(highlightedRowId, 'up')}
+              disabled={!highlightedRowId}
+              color="primary"
+            >
+              <ArrowUpwardIcon />
+            </IconButton>
+            <IconButton
+              onClick={() => moveRow(highlightedRowId, 'down')}
+              disabled={!highlightedRowId}
+              color="primary"
+            >
+              <ArrowDownwardIcon />
+            </IconButton>
+            <IconButton
+              onClick={() => addRow('below', highlightedRowId)}
+              disabled={!highlightedRowId}
+              color="success"
+            >
+              <AddIcon />
+            </IconButton>
+            <IconButton
+              onClick={() => deleteRow(highlightedRowId)}
+              disabled={!highlightedRowId}
+              color="error"
+            >
+              <DeleteIcon />
+            </IconButton>
+            <IconButton
+              onClick={() => setHighlightedRowId(null)}
+              disabled={!highlightedRowId}
+              color="secondary"
+            >
+              <ClearIcon />
+            </IconButton>
+          </Box>
+
+          {/* Right-Aligned Webpart Controls */}
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <IconButton onClick={() => moveWebpart('left')} disabled={!selectedWebpartId}>
+              <ArrowBackIcon />
+            </IconButton>
+            <IconButton onClick={() => moveWebpart('right')} disabled={!selectedWebpartId}>
+              <ArrowForwardIcon />
+            </IconButton>
+            <IconButton onClick={() => moveWebpart('up')} disabled={!selectedWebpartId}>
+              <ArrowUpwardIcon />
+            </IconButton>
+            <IconButton onClick={() => moveWebpart('down')} disabled={!selectedWebpartId}>
+              <ArrowDownwardIcon />
+            </IconButton>
+            <IconButton onClick={deleteSelectedWebpart} disabled={!selectedWebpartId} color="error">
+              <DeleteIcon />
+            </IconButton>
+            <IconButton
+              onClick={() => setSelectedWebpartId(null)}
+              disabled={!selectedWebpartId}
+              color="secondary"
+            >
+              <ClearIcon />
+            </IconButton>
+          </Box>
         </Box>
 
-        {/* Right-Aligned Webpart Controls */}
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <IconButton onClick={() => addWebpartToRow(highlightedRowId)} disabled={!highlightedRowId} color="primary">
-            <AddIcon />
-          </IconButton>
-          <IconButton onClick={() => moveWebpart('left')} disabled={!selectedWebpartId}>
-            <ArrowBackIcon />
-          </IconButton>
-          <IconButton onClick={() => moveWebpart('right')} disabled={!selectedWebpartId}>
-            <ArrowForwardIcon />
-          </IconButton>
-          <IconButton onClick={() => moveWebpart('up')} disabled={!selectedWebpartId}>
-            <ArrowUpwardIcon />
-          </IconButton>
-          <IconButton onClick={() => moveWebpart('down')} disabled={!selectedWebpartId}>
-            <ArrowDownwardIcon />
-          </IconButton>
-          <IconButton onClick={deleteSelectedWebpart} disabled={!selectedWebpartId} color="error">
-            <DeleteIcon />
-          </IconButton>
-          <IconButton onClick={() => setSelectedWebpartId(null)} disabled={!selectedWebpartId}>
-            <ClearIcon />
-          </IconButton>
+        {/* Rows */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+          {layout.rows.map((row) => (
+            <Row
+              key={row.rowId}
+              row={row}
+              isHighlighted={highlightedRowId === row.rowId}
+              highlightRow={() => setHighlightedRowId(row.rowId)}
+              updateRow={updateRow}
+              deleteRow={deleteRow}
+              addRowBelow={(targetRowId) => addRow('below', targetRowId)}
+              moveRow={moveRow}
+              addWebpartToRow={(rowId) =>
+                updateRow({ ...row, webparts: [...row.webparts, { id: `webpart-${Date.now()}` }] })
+              }
+              selectWebpart={setSelectedWebpartId}
+              selectedWebpartId={selectedWebpartId}
+            />
+          ))}
         </Box>
       </Box>
 
-      {/* Rows */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-        {layout.rows.map((row) => (
-          <Row
-            key={row.rowId}
-            row={row}
-            isHighlighted={highlightedRowId === row.rowId}
-            highlightRow={() => setHighlightedRowId(row.rowId)}
-            unhighlightRow={() => setHighlightedRowId(null)}
-            updateRow={updateRow}
-            deleteRow={deleteRow}
-            addRowBelow={(targetRowId) => addRow('below', targetRowId)}
-            moveRow={moveRow}
-            addWebpartToRow={addWebpartToRow}
-            selectWebpart={setSelectedWebpartId}
-            selectedWebpartId={selectedWebpartId}
-          />
-        ))}
+      {/* Right Sidebar */}
+      <Box
+        sx={{
+          width: '200px',
+          backgroundColor: '#f5f5f5',
+          borderLeft: '1px solid #ccc',
+          padding: 2,
+        }}
+      >
+        <h3>Configuration</h3>
+        {selectedWebpartId ? (
+          <p>Configure Webpart ID: {selectedWebpartId}</p>
+        ) : (
+          <p>Select a webpart to configure</p>
+        )}
       </Box>
     </Box>
   );
