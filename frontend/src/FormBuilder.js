@@ -1,25 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import FormEditor from './components/FormEditor';
-import { Box, TextField, Select, MenuItem } from '@mui/material';
+import BuilderHeader from './components/BuilderHeader';
+import { Box, Select, MenuItem, TextField } from '@mui/material';
 import { fetchForms, fetchForm, saveForm } from './api';
-import Header from './components/BuilderHeader';
 
 function FormBuilder() {
   const [form, setForm] = useState({ name: '', rows: [] });
   const [formName, setFormName] = useState('');
   const [formList, setFormList] = useState([]);
-  const [headerColor, setHeaderColor] = useState('#e0e0e0');
+  const [headerColor, setHeaderColor] = useState('#e0e0e0'); // Default grey
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [isNewForm, setIsNewForm] = useState(false); // Default to false
-
+  const [isNewForm, setIsNewForm] = useState(false);
 
   useEffect(() => {
     loadForms();
   }, []);
-
-  useEffect(() => {
-    setHeaderColor(hasUnsavedChanges ? '#e0e0e0' : '#d0f8ce');
-  }, [hasUnsavedChanges]);
 
   const loadForms = async () => {
     try {
@@ -36,23 +31,35 @@ function FormBuilder() {
       alert('Please provide a name for the form');
       return;
     }
-
+  
     const newForm = { ...form, name: formName };
-
+  
     try {
       console.log('Saving form:', newForm);
       await saveForm(newForm);
       setHeaderColor('#d0f8ce'); // Green for success
       loadForms(); // Refresh the form list after saving
     } catch (error) {
-      console.error(error);
-      const backendErrorCode = error.response?.data?.code || 'UNKNOWN_ERROR';
-      const backendErrorMessage = error.response?.data?.message || 'Error saving form. Please try again.';
+      console.error('[FormBuilder.js]_Error:', error);
+  
+      let backendErrorCode = 'UNKNOWN_ERROR';
+      let backendErrorMessage = 'Error saving form. Please try again.';
+  
+      // Extract error details from the error object
+      try {
+        const errorObj = JSON.parse(error.message); // Convert the stringified JSON back to an object
+        backendErrorCode = errorObj.code || backendErrorCode;
+        backendErrorMessage = errorObj.message || backendErrorMessage;
+      } catch (parseError) {
+        console.error('[FormBuilder.js]_Error parsing error response:', parseError);
+      }
+  
       console.error(`Error Code: ${backendErrorCode}, Message: ${backendErrorMessage}`);
       setHeaderColor('#f8d0d0'); // Red for error
       alert(`Error Code: ${backendErrorCode}\nMessage: ${backendErrorMessage}`);
     }
   };
+  
 
   const handleLoad = async (name) => {
     try {
@@ -60,7 +67,7 @@ function FormBuilder() {
       setForm(loadedForm);
       setFormName(name);
       setHasUnsavedChanges(false);
-      setHeaderColor('#d0f8ce');
+      setHeaderColor('#d0f8ce'); // Green for loaded form
       setIsNewForm(false); // Loaded forms are not new
     } catch (error) {
       alert('Failed to load the form. Please try again.');
@@ -71,7 +78,7 @@ function FormBuilder() {
     setForm({ _id: null, name: '', rows: [] });
     setFormName('');
     setHasUnsavedChanges(false);
-    setHeaderColor('#e0e0e0');
+    setHeaderColor('#e0e0e0'); // Reset to grey
     setIsNewForm(true); // Enable editing the form name
   };
 
@@ -80,24 +87,25 @@ function FormBuilder() {
       alert('Cannot copy a form that is not saved yet.');
       return;
     }
-  
+
     const copiedForm = { ...form, _id: null, name: `${form.name}_copy` };
     setForm(copiedForm);
     setFormName(`${formName}_copy`);
     setHasUnsavedChanges(true);
-    setHeaderColor('#e0e0e0');
+    setHeaderColor('#e0e0e0'); // Grey for unsaved changes
     setIsNewForm(true); // Enable editing the copied form name
   };
 
   const handleFormChange = () => {
     setHasUnsavedChanges(true);
-    setHeaderColor('#e0e0e0');
+    setHeaderColor('#e0e0e0'); // Grey indicates unsaved changes
   };
 
   return (
     <Box sx={{ backgroundColor: '#f9f9f9', minHeight: '100vh', padding: 3 }}>
-      <Header
+      <BuilderHeader
         title="Dynamic Form Builder"
+        headerColor={headerColor} // Pass the dynamic header color
         showActions
         onSave={handleSave}
         onCreateNew={handleCreateNewForm}
@@ -154,8 +162,6 @@ function FormBuilder() {
             }}
           />
         </Box>
-
-
       </Box>
       <FormEditor
         layout={form}

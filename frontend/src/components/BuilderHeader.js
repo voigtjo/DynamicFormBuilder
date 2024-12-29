@@ -4,10 +4,10 @@ import SaveIcon from '@mui/icons-material/Save';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
-const BuilderHeader = ({ title, showActions, onSave, onCreateNew, onCopy }) => (
+const BuilderHeader = ({ title, showActions, onSave, onCreateNew, onCopy, headerColor }) => (
   <Box
     sx={{
-      backgroundColor: '#e0e0e0',
+      backgroundColor: headerColor || '#e0e0e0', // Dynamically set background color
       padding: 2,
       borderRadius: 2,
       display: 'flex',
