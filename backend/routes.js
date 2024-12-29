@@ -1,25 +1,57 @@
 const express = require('express');
 const router = express.Router();
-const Layout = require('./models/Layout');
+const Form = require('./models/Form');
 
-// Save or update a layout
-router.post('/layout', async (req, res) => {
-  console.log('POST /layout called');
-  console.log('Request body:', JSON.stringify(req.body, null, 2)); // Log incoming data
+const ERROR_CODES = {
+  FORM_NAME_EXISTS: {
+    code: 'FORM_NAME_EXISTS',
+    message: 'A form with the same name already exists. Please choose a different name.',
+  },
+  FORM_NOT_FOUND: {
+    code: 'FORM_NOT_FOUND',
+    message: 'The form you are trying to update does not exist.',
+  },
+  FORM_NAME_MISMATCH: {
+    code: 'FORM_NAME_MISMATCH',
+    message: 'Form name does not match the existing record. Please ensure the form name is correct.',
+  },
+  FORM_ID_REQUIRED: {
+    code: 'FORM_ID_REQUIRED',
+    message: 'Form ID is required for updates.',
+  },
+  FORM_NAME_REQUIRED: {
+    code: 'FORM_NAME_REQUIRED',
+    message: 'Form name is required.',
+  },
+  INTERNAL_SERVER_ERROR: {
+    code: 'INTERNAL_SERVER_ERROR',
+    message: 'An error occurred. Please try again.',
+  },
+};
+
+// Helper function to log and respond with errors
+const handleError = (res, errorObj, statusCode = 400) => {
+  console.error(`Error Code: ${errorObj.code}, Message: ${errorObj.message}`);
+  return res.status(statusCode).json(errorObj);
+};
+
+// Save or update a form
+router.post('/form', async (req, res) => {
+  console.log('POST /form called');
+  console.log('Request body:', JSON.stringify(req.body, null, 2));
 
   try {
-    const { name, rows } = req.body;
+    const { _id, name, rows } = req.body;
 
     if (!name) {
-      console.error('Layout name is missing');
-      return res.status(400).json({ message: 'Layout name is required' });
+      return handleError(res, ERROR_CODES.FORM_NAME_REQUIRED, 400);
     }
 
-    // Validate and ensure position fields
+    // Ensure position fields
     rows.forEach((row) => {
       row.webparts.forEach((webpart) => {
         if (!webpart.position) {
-          webpart.position = { row: 0, col: 0 }; // Provide default position
+          webpart.position = { row: 0, col: 0 };
         } else {
           if (webpart.position.row === undefined) webpart.position.row = 0;
           if (webpart.position.col === undefined) webpart.position.col = 0;
@@ -27,89 +59,91 @@ router.post('/layout', async (req, res) => {
       });
     });
 
-    let layout = await Layout.findOne({ name });
-    if (layout) {
-      console.log(`Updating existing layout: ${name}`);
-      layout.rows = rows;
-      await layout.save();
-      console.log('Layout updated successfully');
-      return res.json({ message: 'Layout updated successfully', layout });
+    if (!_id) {
+      const existingForm = await Form.findOne({ name });
+      if (existingForm) {
+        return handleError(res, ERROR_CODES.FORM_NAME_EXISTS, 400);
+      }
+
+      const form = new Form({ name, rows });
+      await form.save();
+      return res.json({ message: 'Form saved successfully', form });
     }
 
-    console.log(`Creating new layout: ${name}`);
-    layout = new Layout({ name, rows });
-    await layout.save();
-    console.log('Layout saved successfully');
-    res.json({ message: 'Layout saved successfully', layout });
+    const form = await Form.findById(_id);
+    if (!form) {
+      return handleError(res, ERROR_CODES.FORM_NOT_FOUND, 404);
+    }
+
+    if (form.name !== name) {
+      return handleError(res, ERROR_CODES.FORM_NAME_MISMATCH, 400);
+    }
+
+    form.rows = rows;
+    await form.save();
+    res.json({ message: 'Form updated successfully', form });
   } catch (error) {
-    console.error('Error saving layout:', error);
-    res.status(500).json({ message: 'Error saving layout', error });
+    console.error('Unhandled error:', error);
+    return handleError(res, ERROR_CODES.INTERNAL_SERVER_ERROR, 500);
   }
 });
 
+// Update a form by ID
+router.put('/form/:id', async (req, res) => {
+  console.log(`PUT /form/${req.params.id} called`);
 
-
-// Fetch a specific layout by name
-router.get('/layout/:name', async (req, res) => {
-  console.log(`GET /layout/${req.params.name} called`); // Log when the endpoint is hit
   try {
-    const layout = await Layout.findOne({ name: req.params.name });
-    if (!layout) {
-      console.error(`Layout not found: ${req.params.name}`);
-      return res.status(404).json({ message: 'Layout not found' });
+    const { name, rows } = req.body;
+
+    if (!name) {
+      return handleError(res, ERROR_CODES.FORM_NAME_REQUIRED, 400);
     }
-    console.log('Layout fetched successfully:', JSON.stringify(layout, null, 2)); // Log the fetched layout
-    res.json(layout);
+
+    const form = await Form.findById(req.params.id);
+    if (!form) {
+      return handleError(res, ERROR_CODES.FORM_NOT_FOUND, 404);
+    }
+
+    if (form.name !== name) {
+      return handleError(res, ERROR_CODES.FORM_NAME_MISMATCH, 400);
+    }
+
+    form.rows = rows;
+    await form.save();
+    res.json({ message: 'Form updated successfully', form });
   } catch (error) {
-    console.error('Error fetching layout:', error); // Log any errors
-    res.status(500).json({ message: 'Error fetching layout', error });
+    console.error('Unhandled error:', error);
+    return handleError(res, ERROR_CODES.INTERNAL_SERVER_ERROR, 500);
   }
 });
 
-// Update a layout by ID
-router.put('/layout/:id', async (req, res) => {
-  console.log(`PUT /layout/${req.params.id} called`); // Log when the endpoint is hit
+// Fetch a specific form by name
+router.get('/form/:name', async (req, res) => {
+  console.log(`GET /form/${req.params.name} called`);
   try {
-    const layout = await Layout.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!layout) {
-      console.error(`Layout not found for update: ${req.params.id}`);
-      return res.status(404).json({ message: 'Layout not found' });
+    const form = await Form.findOne({ name: req.params.name });
+    if (!form) {
+      console.error(`Form not found: ${req.params.name}`);
+      return res.status(404).json(ERROR_CODES.FORM_NOT_FOUND);
     }
-    console.log('Layout updated successfully:', JSON.stringify(layout, null, 2)); // Log the updated layout
-    res.json(layout);
+    console.log('Form fetched successfully:', JSON.stringify(form, null, 2));
+    res.json(form);
   } catch (error) {
-    console.error('Error updating layout:', error); // Log any errors
-    res.status(500).json({ message: 'Error updating layout', error });
+    console.error('Unhandled error:', error);
+    return handleError(res, ERROR_CODES.INTERNAL_SERVER_ERROR, 500);
   }
 });
 
-// Delete a layout by ID
-router.delete('/layout/:id', async (req, res) => {
-  console.log(`DELETE /layout/${req.params.id} called`); // Log when the endpoint is hit
+// Fetch all form names
+router.get('/forms', async (req, res) => {
+  console.log('GET /forms called');
   try {
-    const layout = await Layout.findByIdAndDelete(req.params.id);
-    if (!layout) {
-      console.error(`Layout not found for deletion: ${req.params.id}`);
-      return res.status(404).json({ message: 'Layout not found' });
-    }
-    console.log(`Layout deleted successfully: ${req.params.id}`);
-    res.json({ message: 'Layout deleted successfully' });
+    const forms = await Form.find({}, 'name');
+    console.log('Forms fetched from database:', JSON.stringify(forms, null, 2));
+    res.json(forms);
   } catch (error) {
-    console.error('Error deleting layout:', error); // Log any errors
-    res.status(500).json({ message: 'Error deleting layout', error });
-  }
-});
-
-// Fetch all layout names
-router.get('/layouts', async (req, res) => {
-  console.log('GET /layouts called'); // Log when the endpoint is hit
-  try {
-    const layouts = await Layout.find({}, 'name'); // Fetch only the names of the layouts
-    console.log('Layouts fetched from database:', JSON.stringify(layouts, null, 2)); // Log the fetched layouts
-    res.json(layouts); // Send the layouts as JSON
-  } catch (error) {
-    console.error('Error fetching layouts:', error); // Log any errors
-    res.status(500).json({ message: 'Error fetching layouts', error });
+    console.error('Unhandled error:', error);
+    return handleError(res, ERROR_CODES.INTERNAL_SERVER_ERROR, 500);
   }
 });
 

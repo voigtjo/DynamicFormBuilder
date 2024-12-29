@@ -1,6 +1,6 @@
 import React from 'react';
 import Webpart from './Webpart';
-import { Box, Button, IconButton } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
 const Row = ({
