@@ -6,7 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 const Row = ({
   row,
   updateRow,
-  addWebpartToRow, // Function to add webpart to empty row
+  addWebpartToRow,
   selectWebpart,
   selectedWebpartId,
   isHighlighted,
@@ -17,41 +17,51 @@ const Row = ({
     backgroundColor: isHighlighted ? '#E3F2FD' : '#fefefe',
     borderRadius: '8px',
     padding: 0.5,
-    marginBottom: 0, 
+    marginBottom: 0,
     transition: 'background-color 0.3s, border-color 0.3s',
   };
 
+  const handleRowClick = (e) => {
+    // If a webpart is clicked, don't highlight the row
+    if (e.target.closest('.webpart')) return;
+    highlightRow(); // Highlight the row
+  };
+
   return (
-    <Box
-      sx={rowStyle}
-      onClick={(e) => {
-        // Avoid highlighting if a webpart is clicked
-        if (e.target.closest('.webpart')) return;
-        highlightRow(); // Highlight the row
-      }}
-    >
+    <Box sx={rowStyle} onClick={handleRowClick}>
       {/* Webparts */}
       {row.webparts.length > 0 ? (
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: `repeat(${row.webparts.length}, 1fr)`,
+            gridTemplateColumns: row.flexWebpartWidth !== false
+              ? `repeat(${row.webparts.length}, 1fr)`
+              : 'repeat(12, 1fr)',
             gap: 2,
           }}
         >
           {row.webparts.map((webpart) => (
-            <Webpart
+            <Box
               key={webpart.id}
-              webpart={webpart}
-              updateWebpart={(updatedWebpart) => {
-                const updatedWebparts = row.webparts.map((wp) =>
-                  wp.id === updatedWebpart.id ? updatedWebpart : wp
-                );
-                updateRow({ ...row, webparts: updatedWebparts });
+              sx={{
+                gridColumn: row.flexWebpartWidth !== false
+                  ? undefined
+                  : `span ${webpart.width || 1}`,
               }}
-              selectWebpart={selectWebpart}
-              isSelected={webpart.id === selectedWebpartId}
-            />
+              className="webpart" // Add class for webpart identification
+            >
+              <Webpart
+                webpart={webpart}
+                updateWebpart={(updatedWebpart) => {
+                  const updatedWebparts = row.webparts.map((wp) =>
+                    wp.id === updatedWebpart.id ? updatedWebpart : wp
+                  );
+                  updateRow({ ...row, webparts: updatedWebparts });
+                }}
+                selectWebpart={selectWebpart}
+                isSelected={webpart.id === selectedWebpartId}
+              />
+            </Box>
           ))}
         </Box>
       ) : (
@@ -67,7 +77,7 @@ const Row = ({
           <Button
             variant="outlined"
             startIcon={<AddIcon />}
-            onClick={() => addWebpartToRow(row.rowId)} // Call function to add webpart
+            onClick={() => addWebpartToRow(row.rowId)}
           >
             Add Webpart
           </Button>

@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Row from './Row';
-import { Typography, Box, IconButton } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
-import ClearIcon from '@mui/icons-material/Clear'; // Import ClearIcon
-
+import ControlsSidebar from './ControlsSidebar';
+import ConfigurationSidebar from './ConfigurationSidebar';
+import RowControls from './RowControls';
+import WebpartControls from './WebpartControls';
+import { Box } from '@mui/material';
 
 const FormEditor = ({ layout, setLayout, formId, formName, setFormName }) => {
   const [selectedWebpartId, setSelectedWebpartId] = useState(null);
@@ -20,6 +16,20 @@ const FormEditor = ({ layout, setLayout, formId, formName, setFormName }) => {
       setLayout({ ...layout, rows: [initialRow] });
     }
   }, [layout, setLayout]);
+
+  const handleRowSelection = (rowId) => {
+    if (selectedWebpartId) {
+      setSelectedWebpartId(null); // Deselect webpart if a row is selected
+    }
+    setHighlightedRowId(rowId);
+  };
+
+  const handleWebpartSelection = (webpartId) => {
+    if (highlightedRowId) {
+      setHighlightedRowId(null); // Deselect row if a webpart is selected
+    }
+    setSelectedWebpartId(webpartId);
+  };
 
   const addRow = (position = 'end', targetRowId = null) => {
     const newRow = { rowId: `row-${Date.now()}`, webparts: [] };
@@ -145,164 +155,108 @@ const FormEditor = ({ layout, setLayout, formId, formName, setFormName }) => {
     setSelectedWebpartId(null);
   };
 
+  const toggleFlexSwitch = (rowId, isFlexMode) => {
+    const selectedRow = layout.rows.find((row) => row.rowId === rowId);
+    if (!selectedRow) return;
+  
+    if (!isFlexMode) {
+      const totalWebparts = selectedRow.webparts.length;
+      const fixedWidth = Math.floor(12 / totalWebparts);
+  
+      const updatedWebparts = selectedRow.webparts.map((webpart) => ({
+        ...webpart,
+        width: fixedWidth,
+      }));
+  
+      const updatedRow = {
+        ...selectedRow,
+        flexWebpartWidth: false,
+        webparts: updatedWebparts,
+      };
+  
+      updateRow(updatedRow);
+    } else {
+      const updatedRow = {
+        ...selectedRow,
+        flexWebpartWidth: true,
+      };
+  
+      updateRow(updatedRow);
+    }
+  };
+  
+
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
       {/* Left Sidebar */}
-      <Box
-        sx={{
-          width: '200px',
-          backgroundColor: '#f5f5f5',
-          borderRight: '1px solid #ccc',
-          padding: 2,
-        }}
-      >
-        <h3>Controls</h3>
-        <p>Drag and drop controls here</p>
+      <Box sx={{ width: '16.66%', backgroundColor: '#f5f5f5', borderRight: '1px solid #ccc', padding: 2 }}>
+        <ControlsSidebar />
       </Box>
 
       {/* Main Content */}
       <Box sx={{ flexGrow: 1, padding: 2 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 2,
-          }}
-        >
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <IconButton
-            onClick={() => moveRow(highlightedRowId, 'up')}
-            disabled={!highlightedRowId}
-            color="primary"
-          >
-            <ArrowUpwardIcon />
-          </IconButton>
-          <IconButton
-            onClick={() => moveRow(highlightedRowId, 'down')}
-            disabled={!highlightedRowId}
-            color="primary"
-          >
-            <ArrowDownwardIcon />
-          </IconButton>
-          <IconButton
-            onClick={() => addRow('below', highlightedRowId)}
-            disabled={!highlightedRowId}
-            color="success"
-          >
-            <AddIcon />
-          </IconButton>
-          <IconButton
-            onClick={() => deleteRow(highlightedRowId)}
-            disabled={!highlightedRowId}
-            color="error"
-          >
-            <DeleteIcon />
-          </IconButton>
-          <IconButton
-            onClick={() => setHighlightedRowId(null)} // Deselect the highlighted row
-            disabled={!highlightedRowId}
-            color="secondary"
-          >
-            <ClearIcon />
-          </IconButton>
-        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
+        <RowControls
+          highlightedRowId={highlightedRowId}
+          moveRow={moveRow}
+          addRow={addRow}
+          deleteRow={deleteRow}
+          setHighlightedRowId={setHighlightedRowId}
+          updateRow={updateRow} // Pass updateRow here
+          rows={layout.rows}
+        />
 
 
-        <Box sx={{ display: 'flex', gap: 1 }}>
-        {/* Move Webpart Left */}
-        <IconButton onClick={() => moveWebpart('left')} disabled={!selectedWebpartId}>
-          <ArrowBackIcon />
-        </IconButton>
 
-        {/* Move Webpart Right */}
-        <IconButton onClick={() => moveWebpart('right')} disabled={!selectedWebpartId}>
-          <ArrowForwardIcon />
-        </IconButton>
-
-        {/* Move Webpart Up */}
-        <IconButton onClick={() => moveWebpart('up')} disabled={!selectedWebpartId}>
-          <ArrowUpwardIcon />
-        </IconButton>
-
-        {/* Move Webpart Down */}
-        <IconButton onClick={() => moveWebpart('down')} disabled={!selectedWebpartId}>
-          <ArrowDownwardIcon />
-        </IconButton>
-
-        {/* Delete Selected Webpart */}
-        <IconButton onClick={deleteSelectedWebpart} disabled={!selectedWebpartId} color="error">
-          <DeleteIcon />
-        </IconButton>
-
-        {/* Add New Webpart */}
-        <IconButton
-          onClick={() => {
-            if (!highlightedRowId) return;
-            const newWebpart = {
-              id: `webpart-${Date.now()}`,
-              type: 'text', // Set a default type
-              label: '',
-              position: { row: highlightedRowId, col: 0 }, // Example position
-            };
+        <WebpartControls
+          selectedWebpartId={selectedWebpartId}
+          moveWebpart={moveWebpart}
+          deleteSelectedWebpart={deleteSelectedWebpart}
+          addWebpartToRow={(rowId) => {
             const updatedRows = layout.rows.map((row) =>
-              row.rowId === highlightedRowId
-                ? { ...row, webparts: [...row.webparts, newWebpart] }
+              row.rowId === rowId
+                ? {
+                    ...row,
+                    webparts: [
+                      ...row.webparts,
+                      {
+                        id: `webpart-${Date.now()}`,
+                        type: 'text',
+                        label: '',
+                        width: 4, // Default width
+                      },
+                    ],
+                  }
                 : row
             );
             setLayout({ ...layout, rows: updatedRows });
           }}
-          disabled={!highlightedRowId}
-          color="success"
-        >
-          <AddIcon />
-        </IconButton>
+          updateWebpartWidth={(webpartId, newWidth) => {
+            const updatedRows = layout.rows.map((row) => ({
+              ...row,
+              webparts: row.webparts.map((webpart) =>
+                webpart.id === webpartId ? { ...webpart, width: newWidth } : webpart
+              ),
+            }));
+            setLayout({ ...layout, rows: updatedRows });
+          }}
+          setSelectedWebpartId={setSelectedWebpartId}
+          highlightedRowId={highlightedRowId}
+          layout={layout}
+        />
 
-        {/* Deselect Webpart */}
-        <IconButton
-          onClick={() => setSelectedWebpartId(null)}
-          disabled={!selectedWebpartId}
-          color="secondary"
-        >
-          <ClearIcon />
-        </IconButton>
-      </Box>
+
+
 
         </Box>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: 1,
-              backgroundColor: '#f5f5f5',
-              borderBottom: '1px solid #ccc',
-            }}
-          >
-            <Typography variant="body1" sx={{ color: 'gray' }}>
-              <strong>Form ID:</strong>&nbsp;
-              {formId || <span style={{ fontStyle: 'italic' }}>New Form ID</span>}
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                color: 'gray',
-                textAlign: 'right',
-              }}
-            >
-              <strong>Form Name:</strong>&nbsp;
-              {formName || <span style={{ fontStyle: 'italic' }}>New Form Name</span>}
-            </Typography>
-          </Box>
-
           {layout.rows.map((row) => (
             <Row
               key={row.rowId}
               row={row}
               isHighlighted={highlightedRowId === row.rowId}
-              highlightRow={() => setHighlightedRowId(row.rowId)}
+              highlightRow={() => handleRowSelection(row.rowId)}
               updateRow={updateRow}
               deleteRow={deleteRow}
               addRowBelow={(targetRowId) => addRow('below', targetRowId)}
@@ -321,7 +275,7 @@ const FormEditor = ({ layout, setLayout, formId, formName, setFormName }) => {
                   ],
                 })
               }
-              selectWebpart={setSelectedWebpartId}
+              selectWebpart={handleWebpartSelection}
               selectedWebpartId={selectedWebpartId}
             />
           ))}
@@ -329,20 +283,8 @@ const FormEditor = ({ layout, setLayout, formId, formName, setFormName }) => {
       </Box>
 
       {/* Right Sidebar */}
-      <Box
-        sx={{
-          width: '200px',
-          backgroundColor: '#f5f5f5',
-          borderLeft: '1px solid #ccc',
-          padding: 2,
-        }}
-      >
-        <h3>Configuration</h3>
-        {selectedWebpartId ? (
-          <p>Configure Webpart ID: {selectedWebpartId}</p>
-        ) : (
-          <p>Select a webpart to configure</p>
-        )}
+      <Box sx={{ width: '16.66%', backgroundColor: '#f5f5f5', borderLeft: '1px solid #ccc', padding: 2 }}>
+        <ConfigurationSidebar selectedControl={selectedWebpartId} />
       </Box>
     </Box>
   );
