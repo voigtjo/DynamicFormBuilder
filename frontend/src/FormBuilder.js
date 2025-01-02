@@ -3,6 +3,8 @@ import FormEditor from './components/FormEditor';
 import BuilderHeader from './components/BuilderHeader';
 import { Box, Select, MenuItem, TextField } from '@mui/material';
 import { fetchForms, fetchForm, saveForm } from './api';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 function FormBuilder() {
   const [form, setForm] = useState({ name: '', rows: [] });
@@ -163,16 +165,18 @@ function FormBuilder() {
           />
         </Box>
       </Box>
-      <FormEditor
-        layout={form}
-        setLayout={(updatedForm) => {
-          setForm(updatedForm);
-          handleFormChange();
-        }}
-        formId={form._id}
-        formName={formName}
-        setFormName={setFormName}
-      />
+      <DndProvider backend={HTML5Backend}>
+        <FormEditor
+          layout={form}
+          setLayout={(updatedForm) => {
+            setForm(updatedForm);
+            handleFormChange();
+          }}
+          formId={form._id}
+          formName={formName}
+          setFormName={setFormName}
+        />
+      </DndProvider>
     </Box>
   );
 }

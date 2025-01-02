@@ -1,20 +1,36 @@
-// ControlsSidebar.js
 import React from 'react';
+import { Button, List, ListItem } from '@mui/material';
 
-const ControlsSidebar = () => {
-    return (
-        <div className="controls-sidebar">
-            <h2>Controls</h2>
-            <p>Drag controls from here and drop them on webparts of the form.</p>
-            {/* Example controls list */}
-            <ul>
-                <li draggable>Label</li>
-                <li draggable>Image</li>
-                <li draggable>Link</li>
-                {/* Add more controls */}
-            </ul>
-        </div>
-    );
+const ControlsSidebar = ({ assignControl }) => {
+  const controls = [
+    { type: 'LabelControl', label: 'Label' },
+    { type: 'TextInputControl', label: 'Text Input' },
+  ];
+
+  return (
+    <div>
+      <h3>Controls</h3>
+      <List>
+        {controls.map((control) => (
+          <ListItem key={control.type}>
+            <Button
+              variant="contained"
+              onClick={() =>
+                assignControl({
+                  type: control.type,
+                  props: { label: control.label },
+                  value: control.type === 'TextInputControl' ? '' : undefined,
+                })
+              }
+            >
+              {control.label}
+            </Button>
+          </ListItem>
+        ))}
+      </List>
+    </div>
+  );
 };
 
 export default ControlsSidebar;
+    

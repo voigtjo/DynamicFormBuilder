@@ -7,6 +7,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 const WebpartControls = ({
   selectedWebpartId,
@@ -17,6 +18,7 @@ const WebpartControls = ({
   setSelectedWebpartId,
   highlightedRowId,
   layout,
+  setLayout,
 }) => {
   const selectedWebpart = layout.rows
     .flatMap((row) => row.webparts)
@@ -25,6 +27,20 @@ const WebpartControls = ({
   const isManualWidthMode = layout.rows.some(
     (row) => row.webparts.some((webpart) => webpart.id === selectedWebpartId) && row.flexWebpartWidth === false
   );
+
+  const handleCancelAssignment = () => {
+    if (!selectedWebpartId) return;
+
+    const updatedRows = layout.rows.map((row) => ({
+      ...row,
+      webparts: row.webparts.map((webpart) =>
+        webpart.id === selectedWebpartId ? { ...webpart, control: null } : webpart
+      ),
+    }));
+
+    setLayout({ ...layout, rows: updatedRows }); // Use setLayout directly
+    setSelectedWebpartId(null);
+  };
 
   return (
     <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', marginBottom: 2 }}>
@@ -94,6 +110,16 @@ const WebpartControls = ({
           ))}
         </Select>
       )}
+
+      {/* Cancel Assignment Button */}
+      <IconButton
+        onClick={handleCancelAssignment}
+        disabled={!selectedWebpartId}
+        title="Cancel Control Assignment"
+        color="primary"
+      >
+        <CancelIcon />
+      </IconButton>
 
       {/* Clear Selection Button */}
       <IconButton

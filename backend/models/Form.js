@@ -1,5 +1,11 @@
 const mongoose = require('mongoose');
 
+// Define the Control schema
+const ControlSchema = new mongoose.Schema({
+  type: { type: String, required: true }, // Type of control, e.g., 'LabelControl', 'TextInputControl'
+  props: { type: mongoose.Schema.Types.Mixed, default: {} }, // Additional properties like label, placeholder, etc.
+});
+
 // Define the Webpart schema
 const WebpartSchema = new mongoose.Schema({
   id: { type: String, required: true },
@@ -10,14 +16,15 @@ const WebpartSchema = new mongoose.Schema({
   },
   label: { type: String },
   elements: { type: Array, default: [] },
-  width: { type: Number, default: 1 }, // New: Width for fixed webpart layout
+  width: { type: Number, default: 1 }, // Width for fixed webpart layout
+  control: { type: ControlSchema, default: null }, // New: Store assigned control
 });
 
 // Define the Row schema
 const RowSchema = new mongoose.Schema({
   rowId: { type: String, required: true },
   webparts: [WebpartSchema], // Use the Webpart schema here
-  flexWebpartWidth: { type: Boolean, default: true }, // New: Flex or Fix Webpart Width mode
+  flexWebpartWidth: { type: Boolean, default: true }, // Flex or Fix Webpart Width mode
 });
 
 // Define the Layout schema

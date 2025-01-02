@@ -1,39 +1,77 @@
 import React from 'react';
-import { Box, TextField } from '@mui/material';
+import { Box, TextField, Typography } from '@mui/material';
 
 const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
-  const handleLabelChange = (e) => {
-    updateWebpart({ ...webpart, label: e.target.value });
+  const handleClick = () => {
+    selectWebpart(webpart.id);
   };
 
-  const handleClick = () => {
-    if (selectWebpart) {
-      selectWebpart(webpart.id); // Set the selected webpart ID
+  const renderControl = () => {
+    switch (webpart.control?.type) {
+      case 'LabelControl':
+        return (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+              width: '100%',
+            }}
+          >
+            <Typography>{webpart.control.props.label}</Typography>
+          </Box>
+        );
+      case 'TextInputControl':
+        return (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              gap: 1,
+              width: '100%',
+              padding: '0 8px',
+            }}
+          >
+            <Typography>{webpart.control.props.label}</Typography>
+            <TextField
+              value={webpart.control.value || ''}
+              onChange={(e) =>
+                updateWebpart({
+                  ...webpart,
+                  control: {
+                    ...webpart.control,
+                    value: e.target.value,
+                  },
+                })
+              }
+              fullWidth
+            />
+          </Box>
+        );
+      default:
+        return <p></p>;
     }
   };
 
   return (
     <Box
-      onClick={handleClick} // Highlight when clicked
+      onClick={handleClick}
       sx={{
-        position: 'relative',
         border: isSelected ? '2px solid blue' : '1px solid #ccc',
-        borderRadius: '8px',
         padding: 2,
-        backgroundColor: isSelected ? '#E3F2FD' : '#f9f9f9',
-        margin: 1,
-        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+        borderRadius: '8px',
         cursor: 'pointer',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden', // Prevent overflow issues
+        boxSizing: 'border-box', // Ensures padding doesn't expand the element's size
       }}
     >
-      <TextField
-        label="Label"
-        variant="outlined"
-        size="small"
-        value={webpart.label || ''}
-        onChange={handleLabelChange}
-        sx={{ marginBottom: 1, width: '100%' }}
-      />
+      {renderControl()}
     </Box>
   );
 };

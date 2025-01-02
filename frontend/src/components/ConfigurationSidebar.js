@@ -1,33 +1,45 @@
 import React from 'react';
+import { Box, Typography, TextField } from '@mui/material';
 
-const ConfigurationSidebar = ({ selectedControl }) => {
-    if (!selectedControl || !selectedControl.parameters) {
-        return (
-            <div className="configuration-sidebar">
-                <h2>Configuration</h2>
-                <p>Select a control to configure its parameters.</p>
-            </div>
-        );
-    }
+const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
+  if (!selectedWebpart) {
+    return <Typography>Select a webpart to configure</Typography>;
+  }
 
-    return (
-        <div className="configuration-sidebar">
-            <h2>Configuration</h2>
-            <p>Configure selected Control.</p>
-            <form>
-                {Object.entries(selectedControl.parameters).map(([key, value]) => (
-                    <div key={key}>
-                        <label>{key}</label>
-                        <input
-                            type="text"
-                            value={value}
-                            onChange={(e) => selectedControl.updateParameter(key, e.target.value)}
-                        />
-                    </div>
-                ))}
-            </form>
-        </div>
-    );
+  const handleLabelChange = (e) => {
+    updateWebpart({
+      ...selectedWebpart,
+      control: {
+        ...selectedWebpart.control,
+        props: {
+          ...selectedWebpart.control.props,
+          label: e.target.value,
+        },
+      },
+    });
+  };
+
+  return (
+    <Box>
+      <Typography variant="h6">Configuration</Typography>
+      {selectedWebpart.control && selectedWebpart.control.type === 'LabelControl' && (
+        <TextField
+          label="Label Text"
+          value={selectedWebpart.control.props.label || ''}
+          onChange={handleLabelChange}
+          fullWidth
+        />
+      )}
+      {selectedWebpart.control && selectedWebpart.control.type === 'TextInputControl' && (
+        <TextField
+          label="Text Input Label"
+          value={selectedWebpart.control.props.label || ''}
+          onChange={handleLabelChange}
+          fullWidth
+        />
+      )}
+    </Box>
+  );
 };
 
 export default ConfigurationSidebar;
