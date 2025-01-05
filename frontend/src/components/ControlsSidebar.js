@@ -1,4 +1,5 @@
 import React from 'react';
+import { useDrag } from 'react-dnd';
 import { Button, List, ListItem } from '@mui/material';
 
 const ControlsSidebar = ({ assignControl }) => {
@@ -13,6 +14,7 @@ const ControlsSidebar = ({ assignControl }) => {
       <List>
         {controls.map((control) => (
           <ListItem key={control.type}>
+            <DraggableControl control={control} />
             <Button
               variant="contained"
               onClick={() =>
@@ -22,8 +24,9 @@ const ControlsSidebar = ({ assignControl }) => {
                   value: control.type === 'TextInputControl' ? '' : undefined,
                 })
               }
+              style={{ marginLeft: '8px' }}
             >
-              {control.label}
+              Assign {control.label}
             </Button>
           </ListItem>
         ))}
@@ -32,5 +35,21 @@ const ControlsSidebar = ({ assignControl }) => {
   );
 };
 
+const DraggableControl = ({ control }) => {
+  const [, drag] = useDrag(() => ({
+    type: 'CONTROL',
+    item: control,
+  }));
+
+  return (
+    <Button
+      ref={drag}
+      variant="contained"
+      style={{ cursor: 'grab' }}
+    >
+      {control.label}
+    </Button>
+  );
+};
+
 export default ControlsSidebar;
-    

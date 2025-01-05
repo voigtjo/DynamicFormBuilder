@@ -19,17 +19,20 @@
 
     const assignControlToWebpart = (control) => {
       if (!selectedWebpartId) return;
-
-      const updatedRows = layout.rows.map((row) => ({
-        ...row,
-        webparts: row.webparts.map((webpart) =>
-          webpart.id === selectedWebpartId
-            ? { ...webpart, control }
-            : webpart
-        ),
-      }));
-      setLayout({ ...layout, rows: updatedRows });
+    
+      setLayout((prevLayout) => {
+        const updatedRows = prevLayout.rows.map((row) => ({
+          ...row,
+          webparts: row.webparts.map((webpart) =>
+            webpart.id === selectedWebpartId
+              ? { ...webpart, control }
+              : webpart
+          ),
+        }));
+        return { ...prevLayout, rows: updatedRows };
+      });
     };
+    
 
     const handleRowSelection = (rowId) => {
       if (selectedWebpartId) {
@@ -259,6 +262,7 @@
               <Row
                 key={row.rowId}
                 row={row}
+                setLayout={setLayout} // Pass setLayout as a prop
                 isHighlighted={highlightedRowId === row.rowId}
                 highlightRow={() => handleRowSelection(row.rowId)}
                 updateRow={updateRow}

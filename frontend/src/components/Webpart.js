@@ -1,13 +1,36 @@
 import React from 'react';
+import { useDrop } from 'react-dnd';
 import { Box, TextField, Typography } from '@mui/material';
 
 const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
+  const [, drop] = useDrop(() => ({
+    accept: 'CONTROL',
+    drop: (control) => assignControl(control),
+  }));
+
+
+  const assignControl = (control) => {
+    updateWebpart({
+      ...webpart,
+      control: {
+        type: control.type,
+        props: { label: control.label },
+        value: control.type === 'TextInputControl' ? '' : undefined,
+      },
+    });
+  };
+  
+
   const handleClick = () => {
     selectWebpart(webpart.id);
   };
 
   const renderControl = () => {
-    switch (webpart.control?.type) {
+    if (!webpart.control) {
+      return <p>No control assigned</p>;
+    }
+
+    switch (webpart.control.type) {
       case 'LabelControl':
         return (
           <Box
@@ -51,12 +74,13 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
           </Box>
         );
       default:
-        return <p></p>;
+        return null;
     }
   };
 
   return (
     <Box
+      ref={drop}
       onClick={handleClick}
       sx={{
         border: isSelected ? '2px solid blue' : '1px solid #ccc',
@@ -67,8 +91,8 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        overflow: 'hidden', // Prevent overflow issues
-        boxSizing: 'border-box', // Ensures padding doesn't expand the element's size
+        overflow: 'hidden',
+        boxSizing: 'border-box',
       }}
     >
       {renderControl()}

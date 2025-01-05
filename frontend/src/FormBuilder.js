@@ -103,6 +103,11 @@ function FormBuilder() {
     setHeaderColor('#e0e0e0'); // Grey indicates unsaved changes
   };
 
+  const setLayout = (updatedForm) => {
+    setForm(updatedForm);
+    handleFormChange();
+  }
+
   return (
     <Box sx={{ backgroundColor: '#f9f9f9', minHeight: '100vh', padding: 3 }}>
       <BuilderHeader
@@ -168,10 +173,7 @@ function FormBuilder() {
       <DndProvider backend={HTML5Backend}>
         <FormEditor
           layout={form}
-          setLayout={(updatedForm) => {
-            setForm(updatedForm);
-            handleFormChange();
-          }}
+          setLayout={setLayout}
           formId={form._id}
           formName={formName}
           setFormName={setFormName}

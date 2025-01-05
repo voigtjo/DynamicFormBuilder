@@ -6,6 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 const Row = ({
   row,
   updateRow,
+  setLayout,
   addWebpartToRow,
   selectWebpart,
   selectedWebpartId,
@@ -25,6 +26,18 @@ const Row = ({
     // If a webpart is clicked, don't highlight the row
     if (e.target.closest('.webpart')) return;
     highlightRow(); // Highlight the row
+  };
+
+  const updateWebpart = (updatedWebpart) => {
+    setLayout((prevLayout) => ({
+      ...prevLayout,
+      rows: prevLayout.rows.map((r) => ({
+        ...r,
+        webparts: r.webparts.map((webpart) =>
+          webpart.id === updatedWebpart.id ? updatedWebpart : webpart
+        ),
+      })),
+    }));
   };
 
   return (
@@ -52,12 +65,7 @@ const Row = ({
             >
               <Webpart
                 webpart={webpart}
-                updateWebpart={(updatedWebpart) => {
-                  const updatedWebparts = row.webparts.map((wp) =>
-                    wp.id === updatedWebpart.id ? updatedWebpart : wp
-                  );
-                  updateRow({ ...row, webparts: updatedWebparts });
-                }}
+                updateWebpart={updateWebpart}
                 selectWebpart={selectWebpart}
                 isSelected={webpart.id === selectedWebpartId}
               />
