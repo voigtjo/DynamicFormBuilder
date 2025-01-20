@@ -1,24 +1,40 @@
-import React from 'react';
-import { Box, Typography, TextField, Button } from '@mui/material';
+import React, { useState } from 'react';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { ChromePicker } from 'react-color';
 
 const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
+  const [openColorPickerIndex, setOpenColorPickerIndex] = useState(null);
+
   if (!selectedWebpart) {
     return <Typography>Select a webpart to configure</Typography>;
   }
 
-  const handleLabelChange = (e) => {
+  // Handle Markdown Content Change
+  const handleMarkdownContentChange = (e) => {
     updateWebpart({
       ...selectedWebpart,
       control: {
         ...selectedWebpart.control,
         props: {
           ...selectedWebpart.control?.props,
-          label: e.target.value,
+          markdownContent: e.target.value,
         },
       },
     });
   };
 
+  // Handle Dropdown Option Updates (unchanged)
   const handleOptionValueChange = (index, value) => {
     const updatedOptions = [...(selectedWebpart.control?.props?.options || [])];
     updatedOptions[index] = {
@@ -41,7 +57,7 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
     const updatedOptions = [...(selectedWebpart.control?.props?.options || [])];
     updatedOptions[index] = {
       ...(updatedOptions[index] || { value: '' }),
-      color,
+      color: color.hex,
     };
     updateWebpart({
       ...selectedWebpart,
@@ -69,49 +85,109 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
     });
   };
 
+  // Render Fields for Configuration
   const renderConfigurationFields = () => {
     switch (selectedWebpart.control?.type) {
-      case 'LabelControl':
-      case 'TextInputControl':
-      case 'IntegerInputField':
-      case 'DoubleInputField':
-      case 'CurrencyInputField':
-      case 'Dateselector':
+      case 'MarkdownControl':
         return (
-          <TextField
-            label="Label Text"
-            value={selectedWebpart.control?.props?.label || ''}
-            onChange={handleLabelChange}
-            fullWidth
-          />
+          <Box>
+            <Typography>Markdown Content:</Typography>
+            <TextField
+              label="Markdown Content"
+              value={selectedWebpart.control?.props?.markdownContent || ''}
+              onChange={handleMarkdownContentChange}
+              multiline
+              rows={4}
+              fullWidth
+              sx={{ mt: 2 }}
+            />
+          </Box>
         );
       case 'DropDownField':
         return (
           <Box>
             <Typography>Options:</Typography>
-            {selectedWebpart.control?.props?.options?.map((option, index) => (
-              <Box key={index} sx={{ display: 'flex', gap: 1, mb: 1 }}>
-                <TextField
-                  label={`Option ${index + 1} Value`}
-                  value={option.value || ''}
-                  onChange={(e) => handleOptionValueChange(index, e.target.value)}
-                  fullWidth
-                />
-                <TextField
-                  label="Color"
-                  value={option.color || ''}
-                  onChange={(e) => handleOptionColorChange(index, e.target.value)}
-                  fullWidth
-                />
-              </Box>
-            ))}
+            <Table>
+              <TableBody>
+                {selectedWebpart.control?.props?.options?.map((option, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      <TextField
+                        label={`Option ${index + 1} Value`}
+                        value={option.value || ''}
+                        onChange={(e) => handleOptionValueChange(index, e.target.value)}
+                        fullWidth
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Box
+                        sx={{
+                          width: '36px',
+                          height: '36px',
+                          backgroundColor: option.color || '#ffffff',
+                          border: '1px solid #ccc',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => setOpenColorPickerIndex(index)} // Open color picker
+                      ></Box>
+                      {openColorPickerIndex === index && (
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            zIndex: 10,
+                            top: '50px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                          }}
+                        >
+                          <ChromePicker
+                            color={option.color || '#ffffff'}
+                            onChange={(color) => handleOptionColorChange(index, color)}
+                            disableAlpha
+                          />
+                          <IconButton
+                            onClick={() => setOpenColorPickerIndex(null)} // Close the color picker
+                            sx={{
+                              position: 'absolute',
+                              top: '-10px',
+                              right: '-10px',
+                              backgroundColor: 'white',
+                              border: '1px solid #ccc',
+                            }}
+                          >
+                            <CloseIcon />
+                          </IconButton>
+                        </Box>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
             <Button onClick={addOption} variant="contained" sx={{ mt: 2 }}>
               Add Option
             </Button>
           </Box>
         );
       default:
-        return <Typography>No configuration available for this control</Typography>;
+        return (
+          <TextField
+            label="Label Text"
+            value={selectedWebpart.control?.props?.label || ''}
+            onChange={(e) =>
+              updateWebpart({
+                ...selectedWebpart,
+                control: {
+                  ...selectedWebpart.control,
+                  props: { ...selectedWebpart.control?.props, label: e.target.value },
+                },
+              })
+            }
+            fullWidth
+            sx={{ mb: 2 }}
+          />
+        );
     }
   };
 

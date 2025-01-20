@@ -4,6 +4,7 @@ import { Box, Button, List, ListItem, Typography } from '@mui/material';
 
 const ControlsSidebar = ({ assignControl }) => {
   const controls = [
+    { type: 'MarkdownControl', label: 'Markdown' }, // New Markdown control
     { type: 'LabelControl', label: 'Label' },
     { type: 'TextInputControl', label: 'Text Input' },
     { type: 'IntegerInputField', label: 'Integer Input' },

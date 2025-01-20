@@ -10,6 +10,7 @@ import {
   FormControl,
   InputLabel,
 } from '@mui/material';
+import { marked } from 'marked'; // Use marked for Markdown rendering
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -41,6 +42,15 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
     }
 
     switch (webpart.control.type) {
+      case 'MarkdownControl':
+        return (
+          <Box
+            dangerouslySetInnerHTML={{
+              __html: marked(webpart.control.props.markdownContent || ''),
+            }}
+            sx={{ width: '100%' }}
+          ></Box>
+        );
       case 'LabelControl':
         return (
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%' }}>
@@ -106,24 +116,24 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
             />
           </Box>
         );
-      case 'BooleanCheckbox':
-        return (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
-            <Checkbox
-              checked={webpart.control.value || false}
-              onChange={(e) =>
-                updateWebpart({
-                  ...webpart,
-                  control: {
-                    ...webpart.control,
-                    value: e.target.checked,
-                  },
-                })
-              }
-            />
-            <Typography>{webpart.control.props.label}</Typography>
-          </Box>
-        );
+        case 'BooleanCheckbox':
+          return (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
+              <Checkbox
+                checked={webpart.control.value || false}
+                onChange={(e) =>
+                  updateWebpart({
+                    ...webpart,
+                    control: {
+                      ...webpart.control,
+                      value: e.target.checked,
+                    },
+                  })
+                }
+              />
+              <Typography>{webpart.control.props.label || 'Checkbox'}</Typography>
+            </Box>
+          );
       case 'Dateselector':
         return (
           <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -143,30 +153,30 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
             />
           </LocalizationProvider>
         );
-      case 'DropDownField':
-        return (
-          <FormControl fullWidth>
-            <InputLabel>{webpart.control.props.label}</InputLabel>
-            <Select
-              value={webpart.control.value || ''}
-              onChange={(e) =>
-                updateWebpart({
-                  ...webpart,
-                  control: {
-                    ...webpart.control,
-                    value: e.target.value,
-                  },
-                })
-              }
-            >
-              {webpart.control.props.options?.map((option, index) => (
-                <MenuItem key={index} value={option.value} style={{ color: option.color || 'inherit' }}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        );
+        case 'DropDownField':
+          return (
+            <FormControl fullWidth>
+              <InputLabel>{webpart.control.props.label || 'Select'}</InputLabel>
+              <Select
+                value={webpart.control.value || ''}
+                onChange={(e) =>
+                  updateWebpart({
+                    ...webpart,
+                    control: {
+                      ...webpart.control,
+                      value: e.target.value,
+                    },
+                  })
+                }
+              >
+                {webpart.control.props.options?.map((option, index) => (
+                  <MenuItem key={index} value={option.value} style={{ color: option.color || 'inherit' }}>
+                    {option.value || `Option ${index + 1}`}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          );
       default:
         return null;
     }
