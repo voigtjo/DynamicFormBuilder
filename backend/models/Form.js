@@ -3,7 +3,18 @@ const mongoose = require('mongoose');
 // Define the Control schema
 const ControlSchema = new mongoose.Schema({
   type: { type: String, required: true }, // Type of control, e.g., 'LabelControl', 'TextInputControl'
-  props: { type: mongoose.Schema.Types.Mixed, default: {} }, // Additional properties like label, placeholder, etc.
+  props: {
+    label: { type: String, default: '' }, // Label for the control
+    placeholder: { type: String, default: '' }, // Placeholder text for input fields
+    format: { type: String, enum: ['comma', 'dot', 'german', 'us', 'british'], default: 'dot' }, // Format for specific controls
+    currency: { type: String, enum: ['EUR', 'USD', 'GBP'], default: 'USD' }, // Currency type for CurrencyInputField
+    options: [
+      {
+        value: { type: String, required: true }, // Dropdown option value
+        color: { type: String, default: null }, // Optional color for the dropdown option
+      },
+    ],
+  },
 });
 
 // Define the Webpart schema
@@ -17,7 +28,7 @@ const WebpartSchema = new mongoose.Schema({
   label: { type: String },
   elements: { type: Array, default: [] },
   width: { type: Number, default: 1 }, // Width for fixed webpart layout
-  control: { type: ControlSchema, default: null }, // New: Store assigned control
+  control: { type: ControlSchema, default: null }, // Store assigned control and its configuration
 });
 
 // Define the Row schema

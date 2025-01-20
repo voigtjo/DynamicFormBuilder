@@ -1,13 +1,24 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
-import { Box, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  TextField,
+  Typography,
+  Checkbox,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+} from '@mui/material';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
   const [, drop] = useDrop(() => ({
     accept: 'CONTROL',
     drop: (control) => assignControl(control),
   }));
-
 
   const assignControl = (control) => {
     updateWebpart({
@@ -19,7 +30,6 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
       },
     });
   };
-  
 
   const handleClick = () => {
     selectWebpart(webpart.id);
@@ -33,30 +43,13 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
     switch (webpart.control.type) {
       case 'LabelControl':
         return (
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-              width: '100%',
-            }}
-          >
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%' }}>
             <Typography>{webpart.control.props.label}</Typography>
           </Box>
         );
       case 'TextInputControl':
         return (
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              gap: 1,
-              width: '100%',
-              padding: '0 8px',
-            }}
-          >
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, width: '100%' }}>
             <Typography>{webpart.control.props.label}</Typography>
             <TextField
               value={webpart.control.value || ''}
@@ -72,6 +65,107 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
               fullWidth
             />
           </Box>
+        );
+      case 'IntegerInputField':
+      case 'DoubleInputField':
+        return (
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, width: '100%' }}>
+            <Typography>{webpart.control.props.label}</Typography>
+            <TextField
+              type="number"
+              value={webpart.control.value || ''}
+              onChange={(e) =>
+                updateWebpart({
+                  ...webpart,
+                  control: {
+                    ...webpart.control,
+                    value: e.target.value,
+                  },
+                })
+              }
+              fullWidth
+            />
+          </Box>
+        );
+      case 'CurrencyInputField':
+        return (
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, width: '100%' }}>
+            <Typography>{webpart.control.props.label}</Typography>
+            <TextField
+              value={webpart.control.value || ''}
+              onChange={(e) =>
+                updateWebpart({
+                  ...webpart,
+                  control: {
+                    ...webpart.control,
+                    value: e.target.value,
+                  },
+                })
+              }
+              fullWidth
+            />
+          </Box>
+        );
+      case 'BooleanCheckbox':
+        return (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
+            <Checkbox
+              checked={webpart.control.value || false}
+              onChange={(e) =>
+                updateWebpart({
+                  ...webpart,
+                  control: {
+                    ...webpart.control,
+                    value: e.target.checked,
+                  },
+                })
+              }
+            />
+            <Typography>{webpart.control.props.label}</Typography>
+          </Box>
+        );
+      case 'Dateselector':
+        return (
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label={webpart.control.props.label}
+              value={webpart.control.value || null}
+              onChange={(date) =>
+                updateWebpart({
+                  ...webpart,
+                  control: {
+                    ...webpart.control,
+                    value: date,
+                  },
+                })
+              }
+              renderInput={(params) => <TextField {...params} fullWidth />}
+            />
+          </LocalizationProvider>
+        );
+      case 'DropDownField':
+        return (
+          <FormControl fullWidth>
+            <InputLabel>{webpart.control.props.label}</InputLabel>
+            <Select
+              value={webpart.control.value || ''}
+              onChange={(e) =>
+                updateWebpart({
+                  ...webpart,
+                  control: {
+                    ...webpart.control,
+                    value: e.target.value,
+                  },
+                })
+              }
+            >
+              {webpart.control.props.options?.map((option, index) => (
+                <MenuItem key={index} value={option.value} style={{ color: option.color || 'inherit' }}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         );
       default:
         return null;
