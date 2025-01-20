@@ -14,8 +14,10 @@ const ControlSchema = new mongoose.Schema({
         color: { type: String, default: null }, // Optional color for the dropdown option
       },
     ],
+    markdownContent: { type: String, default: '' }, // Add markdownContent explicitly
   },
 });
+
 
 // Define the Webpart schema
 const WebpartSchema = new mongoose.Schema({
