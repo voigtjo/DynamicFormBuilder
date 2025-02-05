@@ -38,7 +38,7 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
 
   const renderControl = () => {
     if (!webpart.control) {
-      return <p>No control assigned</p>;
+      return <Typography>No control assigned</Typography>;
     }
 
     switch (webpart.control.type) {
@@ -49,96 +49,101 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
               __html: marked(webpart.control.props.markdownContent || ''),
             }}
             sx={{ width: '100%' }}
-          ></Box>
+          />
         );
       case 'LabelControl':
         return (
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%' }}>
-            <Typography>{webpart.control.props.label}</Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+              width: '100%',
+            }}
+          >
+            <Typography variant="body1">{webpart.control.props.label}</Typography>
           </Box>
         );
       case 'TextInputControl':
         return (
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, width: '100%' }}>
-            <Typography>{webpart.control.props.label}</Typography>
-            <TextField
-              value={webpart.control.value || ''}
-              onChange={(e) =>
-                updateWebpart({
-                  ...webpart,
-                  control: {
-                    ...webpart.control,
-                    value: e.target.value,
-                  },
-                })
-              }
-              fullWidth
-            />
-          </Box>
+          <TextField
+            label={webpart.control.props.label || 'Text Input'}
+            value={webpart.control.value || ''}
+            onChange={(e) =>
+              updateWebpart({
+                ...webpart,
+                control: {
+                  ...webpart.control,
+                  value: e.target.value,
+                },
+              })
+            }
+            fullWidth
+            variant="outlined"
+          />
         );
       case 'IntegerInputField':
       case 'DoubleInputField':
         return (
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, width: '100%' }}>
-            <Typography>{webpart.control.props.label}</Typography>
-            <TextField
-              type="number"
-              value={webpart.control.value || ''}
-              onChange={(e) =>
-                updateWebpart({
-                  ...webpart,
-                  control: {
-                    ...webpart.control,
-                    value: e.target.value,
-                  },
-                })
-              }
-              fullWidth
-            />
-          </Box>
+          <TextField
+            type="number"
+            label={webpart.control.props.label || 'Number Input'}
+            value={webpart.control.value || ''}
+            onChange={(e) =>
+              updateWebpart({
+                ...webpart,
+                control: {
+                  ...webpart.control,
+                  value: e.target.value,
+                },
+              })
+            }
+            fullWidth
+            variant="outlined"
+          />
         );
       case 'CurrencyInputField':
         return (
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, width: '100%' }}>
-            <Typography>{webpart.control.props.label}</Typography>
-            <TextField
-              value={webpart.control.value || ''}
+          <TextField
+            label={webpart.control.props.label || 'Currency Input'}
+            value={webpart.control.value || ''}
+            onChange={(e) =>
+              updateWebpart({
+                ...webpart,
+                control: {
+                  ...webpart.control,
+                  value: e.target.value,
+                },
+              })
+            }
+            fullWidth
+            variant="outlined"
+          />
+        );
+      case 'BooleanCheckbox':
+        return (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
+            <Checkbox
+              checked={webpart.control.value || false}
               onChange={(e) =>
                 updateWebpart({
                   ...webpart,
                   control: {
                     ...webpart.control,
-                    value: e.target.value,
+                    value: e.target.checked,
                   },
                 })
               }
-              fullWidth
             />
+            <Typography>{webpart.control.props.label || 'Checkbox'}</Typography>
           </Box>
         );
-        case 'BooleanCheckbox':
-          return (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
-              <Checkbox
-                checked={webpart.control.value || false}
-                onChange={(e) =>
-                  updateWebpart({
-                    ...webpart,
-                    control: {
-                      ...webpart.control,
-                      value: e.target.checked,
-                    },
-                  })
-                }
-              />
-              <Typography>{webpart.control.props.label || 'Checkbox'}</Typography>
-            </Box>
-          );
       case 'Dateselector':
         return (
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
-              label={webpart.control.props.label}
+              label={webpart.control.props.label || 'Select Date'}
               value={webpart.control.value || null}
               onChange={(date) =>
                 updateWebpart({
@@ -153,30 +158,31 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
             />
           </LocalizationProvider>
         );
-        case 'DropDownField':
-          return (
-            <FormControl fullWidth>
-              <InputLabel>{webpart.control.props.label || 'Select'}</InputLabel>
-              <Select
-                value={webpart.control.value || ''}
-                onChange={(e) =>
-                  updateWebpart({
-                    ...webpart,
-                    control: {
-                      ...webpart.control,
-                      value: e.target.value,
-                    },
-                  })
-                }
-              >
-                {webpart.control.props.options?.map((option, index) => (
-                  <MenuItem key={index} value={option.value} style={{ color: option.color || 'inherit' }}>
-                    {option.value || `Option ${index + 1}`}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          );
+      case 'DropDownField':
+        return (
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>{webpart.control.props.label || 'Select'}</InputLabel>
+            <Select
+              value={webpart.control.value || ''}
+              onChange={(e) =>
+                updateWebpart({
+                  ...webpart,
+                  control: {
+                    ...webpart.control,
+                    value: e.target.value,
+                  },
+                })
+              }
+              label={webpart.control.props.label || 'Select'}
+            >
+              {webpart.control.props.options?.map((option, index) => (
+                <MenuItem key={index} value={option.value} style={{ color: option.color || 'inherit' }}>
+                  {option.value || `Option ${index + 1}`}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        );
       default:
         return null;
     }

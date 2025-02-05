@@ -9,32 +9,51 @@ import {
   TableBody,
   TableCell,
   TableRow,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ChromePicker } from 'react-color';
+import { marked } from 'marked'; // Import for Markdown rendering
+import OpenInFullIcon from '@mui/icons-material/OpenInFull'; // Import the enlarge icon
 
 const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
   const [openColorPickerIndex, setOpenColorPickerIndex] = useState(null);
+  const [isMarkdownDialogOpen, setMarkdownDialogOpen] = useState(false);
 
   if (!selectedWebpart) {
     return <Typography>Select a webpart to configure</Typography>;
   }
 
-  // Handle Markdown Content Change
-  const handleMarkdownContentChange = (e) => {
+  const handleLabelChange = (e) => {
     updateWebpart({
       ...selectedWebpart,
       control: {
         ...selectedWebpart.control,
         props: {
           ...selectedWebpart.control?.props,
-          markdownContent: e.target.value,
+          label: e.target.value,
         },
       },
     });
   };
 
-  // Handle Dropdown Option Updates (unchanged)
+  const handleMarkdownContentChange = (e) => {
+    const newMarkdown = e.target.value;
+    updateWebpart({
+      ...selectedWebpart,
+      control: {
+        ...selectedWebpart.control,
+        props: {
+          ...selectedWebpart.control?.props,
+          markdownContent: newMarkdown,
+        },
+      },
+    });
+  };
+
   const handleOptionValueChange = (index, value) => {
     const updatedOptions = [...(selectedWebpart.control?.props?.options || [])];
     updatedOptions[index] = {
@@ -85,28 +104,103 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
     });
   };
 
-  // Render Fields for Configuration
+  const renderMarkdownDialog = () => {
+    const markdownContent = selectedWebpart.control?.props?.markdownContent || '';
+
+    return (
+      <Dialog
+        open={isMarkdownDialogOpen}
+        onClose={() => setMarkdownDialogOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Edit Markdown Content</DialogTitle>
+        <DialogContent
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 2,
+          }}
+        >
+          {/* Markdown Editor */}
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="subtitle1" gutterBottom>
+              Raw Markdown
+            </Typography>
+            <TextField
+              value={markdownContent}
+              onChange={(e) => handleMarkdownContentChange(e)}
+              multiline
+              rows={15}
+              fullWidth
+              variant="outlined"
+            />
+          </Box>
+
+          {/* Markdown Preview */}
+          <Box
+            sx={{
+              flex: 1,
+              border: '1px solid #ccc',
+              borderRadius: 2,
+              padding: 2,
+              backgroundColor: '#f9f9f9',
+              overflowY: 'auto',
+            }}
+          >
+            <Typography variant="subtitle1" gutterBottom>
+              Preview
+            </Typography>
+            <Box
+              dangerouslySetInnerHTML={{ __html: marked(markdownContent) }}
+              sx={{ fontSize: '0.9rem', lineHeight: 1.6 }}
+            ></Box>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setMarkdownDialogOpen(false)} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  };
+
   const renderConfigurationFields = () => {
     switch (selectedWebpart.control?.type) {
       case 'MarkdownControl':
         return (
           <Box>
-            <Typography>Markdown Content:</Typography>
+            <Typography
+              variant="subtitle2"
+              sx={{ fontSize: '0.9rem', marginBottom: 1 }}
+            >
+              Markdown Content:
+            </Typography>
             <TextField
-              label="Markdown Content"
               value={selectedWebpart.control?.props?.markdownContent || ''}
               onChange={handleMarkdownContentChange}
               multiline
               rows={4}
+              variant="outlined"
               fullWidth
-              sx={{ mt: 2 }}
+              sx={{ fontSize: '0.85rem' }}
             />
+            <IconButton
+              onClick={() => setMarkdownDialogOpen(true)}
+              size="small"
+              sx={{ mt: 1 }}
+            >
+              <OpenInFullIcon />
+            </IconButton>
+            {renderMarkdownDialog()}
           </Box>
-        );
-      case 'DropDownField':
+        );      case 'DropDownField':
         return (
           <Box>
-            <Typography>Options:</Typography>
+            <Typography variant="subtitle1" gutterBottom>
+              Options:
+            </Typography>
             <Table>
               <TableBody>
                 {selectedWebpart.control?.props?.options?.map((option, index) => (
@@ -117,6 +211,7 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
                         value={option.value || ''}
                         onChange={(e) => handleOptionValueChange(index, e.target.value)}
                         fullWidth
+                        variant="outlined"
                       />
                     </TableCell>
                     <TableCell>
@@ -129,7 +224,7 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
                           borderRadius: '4px',
                           cursor: 'pointer',
                         }}
-                        onClick={() => setOpenColorPickerIndex(index)} // Open color picker
+                        onClick={() => setOpenColorPickerIndex(index)}
                       ></Box>
                       {openColorPickerIndex === index && (
                         <Box
@@ -147,7 +242,7 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
                             disableAlpha
                           />
                           <IconButton
-                            onClick={() => setOpenColorPickerIndex(null)} // Close the color picker
+                            onClick={() => setOpenColorPickerIndex(null)}
                             sx={{
                               position: 'absolute',
                               top: '-10px',
@@ -173,19 +268,12 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
       default:
         return (
           <TextField
-            label="Label Text"
+            label="Label"
             value={selectedWebpart.control?.props?.label || ''}
-            onChange={(e) =>
-              updateWebpart({
-                ...selectedWebpart,
-                control: {
-                  ...selectedWebpart.control,
-                  props: { ...selectedWebpart.control?.props, label: e.target.value },
-                },
-              })
-            }
+            onChange={handleLabelChange}
             fullWidth
-            sx={{ mb: 2 }}
+            variant="outlined"
+            sx={{ mt: 2 }}
           />
         );
     }
