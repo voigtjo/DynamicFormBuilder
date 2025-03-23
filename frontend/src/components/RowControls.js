@@ -1,10 +1,11 @@
 import React from 'react';
-import { IconButton, Box, Switch, Typography } from '@mui/material';
+import { IconButton, Box, Switch, Typography, Slider } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ClearIcon from '@mui/icons-material/Clear';
+import HeightIcon from '@mui/icons-material/Height';
 
 const RowControls = ({
   highlightedRowId,
@@ -37,6 +38,11 @@ const RowControls = ({
     }
   };
 
+  const handleHeightChange = (event, newValue) => {
+    if (selectedRow) {
+      updateRow({ ...selectedRow, height: newValue });
+    }
+  };
 
 
   
@@ -79,12 +85,27 @@ const RowControls = ({
         <ClearIcon />
       </IconButton>
       {selectedRow && (
-        <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 0 }}>
-          <Switch
-            checked={selectedRow?.flexWebpartWidth === false} // "On" means flexWebpartWidth is false
-            onChange={handleSwitchChange}
-          />
-        </Box>
+        <>
+          <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 0 }}>
+            <Switch
+              checked={selectedRow?.flexWebpartWidth === false} // "On" means flexWebpartWidth is false
+              onChange={handleSwitchChange}
+            />
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', width: 200, marginLeft: 2 }}>
+            <HeightIcon sx={{ mr: 1, color: 'primary.main' }} />
+            <Slider
+              value={selectedRow?.height || 100}
+              onChange={handleHeightChange}
+              min={50}
+              max={500}
+              step={10}
+              aria-labelledby="row-height-slider"
+              valueLabelDisplay="auto"
+              valueLabelFormat={(value) => `${value}px`}
+            />
+          </Box>
+        </>
       )}
     </Box>
   );

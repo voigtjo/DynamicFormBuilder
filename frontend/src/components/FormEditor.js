@@ -12,7 +12,7 @@
 
     useEffect(() => {
       if (layout.rows.length === 0) {
-        const initialRow = { rowId: `row-${Date.now()}`, webparts: [] };
+        const initialRow = { rowId: `row-${Date.now()}`, webparts: [], height: 100 };
         setLayout({ ...layout, rows: [initialRow] });
       }
     }, [layout, setLayout]);
@@ -49,7 +49,7 @@
     };
 
     const addRow = (position = 'end', targetRowId = null) => {
-      const newRow = { rowId: `row-${Date.now()}`, webparts: [] };
+      const newRow = { rowId: `row-${Date.now()}`, webparts: [], height: 100 };
       const updatedRows =
         position === 'top'
           ? [newRow, ...layout.rows]

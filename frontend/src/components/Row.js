@@ -20,6 +20,7 @@ const Row = ({
     padding: 0.5,
     marginBottom: 0,
     transition: 'background-color 0.3s, border-color 0.3s',
+    minHeight: row.height ? `${row.height}px` : '100px', // Use row height or default
   };
 
   const handleRowClick = (e) => {
@@ -79,7 +80,7 @@ const Row = ({
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            height: '100px',
+            height: row.height ? `${row.height}px` : '100px',
           }}
         >
           <Button
