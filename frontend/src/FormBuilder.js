@@ -66,6 +66,15 @@ function FormBuilder() {
   const handleLoad = async (name) => {
     try {
       const loadedForm = await fetchForm(name);
+      
+      // Ensure each row has a height property
+      if (loadedForm && loadedForm.rows) {
+        loadedForm.rows = loadedForm.rows.map(row => ({
+          ...row,
+          height: row.height || 100 // Default to 100 if height is missing
+        }));
+      }
+      
       setForm(loadedForm);
       setFormName(name);
       setHasUnsavedChanges(false);
@@ -77,7 +86,11 @@ function FormBuilder() {
   };
 
   const handleCreateNewForm = () => {
-    setForm({ _id: null, name: '', rows: [] });
+    setForm({ 
+      _id: null, 
+      name: '', 
+      rows: [{ rowId: `row-${Date.now()}`, webparts: [], height: 100 }] // Initialize with one row with height
+    });
     setFormName('');
     setHasUnsavedChanges(false);
     setHeaderColor('#e0e0e0'); // Reset to grey

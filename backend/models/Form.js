@@ -38,6 +38,7 @@ const RowSchema = new mongoose.Schema({
   rowId: { type: String, required: true },
   webparts: [WebpartSchema], // Use the Webpart schema here
   flexWebpartWidth: { type: Boolean, default: true }, // Flex or Fix Webpart Width mode
+  height: { type: Number, default: 100 }, // Default height for rows
 });
 
 // Define the Layout schema

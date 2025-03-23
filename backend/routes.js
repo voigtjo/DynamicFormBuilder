@@ -47,8 +47,13 @@ router.post('/form', async (req, res) => {
       return handleError(res, ERROR_CODES.FORM_NAME_REQUIRED, 400);
     }
 
-    // Ensure position fields
+    // Ensure position fields and row height
     rows.forEach((row) => {
+      // Ensure row height is set
+      if (row.height === undefined) {
+        row.height = 100; // Default height if not specified
+      }
+      
       row.webparts.forEach((webpart) => {
         if (!webpart.position) {
           webpart.position = { row: 0, col: 0 };
