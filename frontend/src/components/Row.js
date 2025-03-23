@@ -20,7 +20,7 @@ const Row = ({
     padding: 0.5,
     marginBottom: 0,
     transition: 'background-color 0.3s, border-color 0.3s',
-    minHeight: row.height ? `${row.height}px` : '100px', // Use row height or default
+    height: row.height ? `${row.height}px` : '100px', // Use row height or default
   };
 
   const handleRowClick = (e) => {
@@ -52,6 +52,7 @@ const Row = ({
               ? `repeat(${row.webparts.length}, 1fr)`
               : 'repeat(12, 1fr)',
             gap: 2,
+            height: '100%',
           }}
         >
           {row.webparts.map((webpart) => (
@@ -80,7 +81,7 @@ const Row = ({
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            height: row.height ? `${row.height}px` : '100px',
+            height: '100%',
           }}
         >
           <Button

@@ -201,7 +201,7 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        overflow: 'hidden',
+        overflow: 'auto',
         boxSizing: 'border-box',
       }}
     >

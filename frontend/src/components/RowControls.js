@@ -97,9 +97,9 @@ const RowControls = ({
             <Slider
               value={selectedRow?.height || 100}
               onChange={handleHeightChange}
-              min={50}
+              min={30}
               max={500}
-              step={10}
+              step={5}
               aria-labelledby="row-height-slider"
               valueLabelDisplay="auto"
               valueLabelFormat={(value) => `${value}px`}
