@@ -1,18 +1,36 @@
 import React from 'react';
 import { useDrag } from 'react-dnd';
-import { Box, Button, List, ListItem, Typography } from '@mui/material';
+import { 
+  Box, 
+  Button, 
+  IconButton, 
+  List, 
+  ListItem, 
+  Tooltip, 
+  Typography 
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import TextFieldsIcon from '@mui/icons-material/TextFields';
+import TextFormatIcon from '@mui/icons-material/TextFormat';
+import NumbersIcon from '@mui/icons-material/Numbers';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import DescriptionIcon from '@mui/icons-material/Description';
 
 const ControlsSidebar = ({ assignControl }) => {
   const controls = [
-    { type: 'MarkdownControl', label: 'Markdown' }, // New Markdown control
-    { type: 'LabelControl', label: 'Label' },
-    { type: 'TextInputControl', label: 'Text Input' },
-    { type: 'IntegerInputField', label: 'Integer Input' },
-    { type: 'DoubleInputField', label: 'Double Input' },
-    { type: 'CurrencyInputField', label: 'Currency Input' },
-    { type: 'BooleanCheckbox', label: 'Checkbox' },
-    { type: 'Dateselector', label: 'Date Selector' },
-    { type: 'DropDownField', label: 'DropDown' },
+    { type: 'MarkdownControl', label: 'Markdown', icon: <DescriptionIcon /> },
+    { type: 'LabelControl', label: 'Label', icon: <TextFormatIcon /> },
+    { type: 'TextInputControl', label: 'Text Input', icon: <TextFieldsIcon /> },
+    { type: 'IntegerInputField', label: 'Integer Input', icon: <NumbersIcon /> },
+    { type: 'DoubleInputField', label: 'Double Input', icon: <NumbersIcon /> },
+    { type: 'CurrencyInputField', label: 'Currency Input', icon: <AttachMoneyIcon /> },
+    { type: 'BooleanCheckbox', label: 'Checkbox', icon: <CheckBoxIcon /> },
+    { type: 'Dateselector', label: 'Date Selector', icon: <CalendarMonthIcon /> },
+    { type: 'DropDownField', label: 'DropDown', icon: <ArrowDropDownIcon /> },
   ];
 
   return (
@@ -36,6 +54,22 @@ const ControlsSidebar = ({ assignControl }) => {
       >
         Controls
       </Typography>
+      
+      {/* Column Headers */}
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        marginBottom: 1,
+        paddingX: 1
+      }}>
+        <Typography variant="subtitle2" sx={{ width: '45%', textAlign: 'center' }}>
+          Drag & Drop
+        </Typography>
+        <Typography variant="subtitle2" sx={{ width: '45%', textAlign: 'center' }}>
+          Click to Add
+        </Typography>
+      </Box>
+      
       <List
         sx={{
           padding: 0,
@@ -76,23 +110,21 @@ const ControlsSidebar = ({ assignControl }) => {
                 width: '45%',
               }}
             >
-              <Button
-                variant="contained"
-                size="small"
-                onClick={() =>
-                  assignControl({
-                    type: control.type,
-                    props: { label: control.label },
-                    value: control.type === 'TextInputControl' ? '' : undefined,
-                  })
-                }
-                sx={{
-                  textTransform: 'none',
-                  width: '100%', // Ensure equal width
-                }}
-              >
-                {control.label}
-              </Button>
+              <Tooltip title={`Add ${control.label}`}>
+                <IconButton
+                  color="primary"
+                  onClick={() =>
+                    assignControl({
+                      type: control.type,
+                      props: { label: control.label },
+                      value: control.type === 'TextInputControl' ? '' : undefined,
+                    })
+                  }
+                  size="small"
+                >
+                  <AddIcon />
+                </IconButton>
+              </Tooltip>
             </Box>
           </ListItem>
         ))}
@@ -108,18 +140,23 @@ const DraggableControl = ({ control }) => {
   }));
 
   return (
-    <Button
-      ref={drag}
-      variant="contained"
-      size="small"
-      style={{
-        cursor: 'grab',
-        textTransform: 'none',
-        width: '100%', // Ensure equal width
-      }}
-    >
-      {control.label}
-    </Button>
+    <Tooltip title={control.label}>
+      <Button
+        ref={drag}
+        variant="contained"
+        size="small"
+        startIcon={control.icon}
+        style={{
+          cursor: 'grab',
+          textTransform: 'none',
+          width: '100%', // Ensure equal width
+          minWidth: '40px',
+          padding: '6px 10px',
+        }}
+      >
+        <DragIndicatorIcon fontSize="small" />
+      </Button>
+    </Tooltip>
   );
 };
 
