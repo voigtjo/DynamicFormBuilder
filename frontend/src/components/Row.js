@@ -1,7 +1,8 @@
 import React from 'react';
 import Webpart from './Webpart';
-import { Box, Button } from '@mui/material';
+import { Box, Button, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import TouchAppIcon from '@mui/icons-material/TouchApp';
 
 const Row = ({
   row,
@@ -21,6 +22,7 @@ const Row = ({
     marginBottom: 0,
     transition: 'background-color 0.3s, border-color 0.3s',
     height: row.height ? `${row.height}px` : '100px', // Use row height or default
+    position: 'relative', // Add position relative for absolute positioning of the select button
   };
 
   const handleRowClick = (e) => {
@@ -43,6 +45,27 @@ const Row = ({
 
   return (
     <Box sx={rowStyle} onClick={handleRowClick}>
+      {/* Select Row Button */}
+      <IconButton 
+        size="small"
+        onClick={(e) => {
+          e.stopPropagation(); // Prevent row click event
+          highlightRow();
+        }}
+        sx={{
+          position: 'absolute',
+          top: '2px',
+          right: '2px',
+          zIndex: 10,
+          padding: '4px',
+          backgroundColor: isHighlighted ? 'rgba(0, 127, 255, 0.1)' : 'rgba(255, 255, 255, 0.7)',
+          '&:hover': {
+            backgroundColor: isHighlighted ? 'rgba(0, 127, 255, 0.2)' : 'rgba(200, 200, 200, 0.7)',
+          },
+        }}
+      >
+        <TouchAppIcon fontSize="small" color={isHighlighted ? "primary" : "action"} />
+      </IconButton>
       {/* Webparts */}
       {row.webparts.length > 0 ? (
         <Box
