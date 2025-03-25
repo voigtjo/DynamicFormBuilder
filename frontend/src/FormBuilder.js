@@ -88,11 +88,24 @@ function FormBuilder() {
     try {
       const loadedForm = await fetchForm(name);
       
-      // Ensure each row has a height property
+      // Ensure each row has a height property and each control has a name
       if (loadedForm && loadedForm.rows) {
         loadedForm.rows = loadedForm.rows.map(row => ({
           ...row,
-          height: row.height || 100 // Default to 100 if height is missing
+          height: row.height || 100, // Default to 100 if height is missing
+          webparts: row.webparts.map(webpart => {
+            // Ensure control has a name if it exists
+            if (webpart.control && !webpart.control.name) {
+              return {
+                ...webpart,
+                control: {
+                  ...webpart.control,
+                  name: `${webpart.control.type.toLowerCase()}_${Date.now()}`
+                }
+              };
+            }
+            return webpart;
+          })
         }));
       }
       

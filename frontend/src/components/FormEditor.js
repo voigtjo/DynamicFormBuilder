@@ -7,6 +7,34 @@
   import { Box } from '@mui/material';
 
   const FormEditor = ({ layout, setLayout, formId, formName, setFormName }) => {
+    // Ensure all controls have names when the layout changes
+    useEffect(() => {
+      if (layout && layout.rows) {
+        const updatedLayout = {
+          ...layout,
+          rows: layout.rows.map(row => ({
+            ...row,
+            webparts: row.webparts.map(webpart => {
+              if (webpart.control && !webpart.control.name) {
+                return {
+                  ...webpart,
+                  control: {
+                    ...webpart.control,
+                    name: `${webpart.control.type.toLowerCase()}_${Date.now()}`
+                  }
+                };
+              }
+              return webpart;
+            })
+          }))
+        };
+        
+        // Only update if there were changes
+        if (JSON.stringify(updatedLayout) !== JSON.stringify(layout)) {
+          setLayout(updatedLayout);
+        }
+      }
+    }, [layout, setLayout]);
     const [selectedWebpartId, setSelectedWebpartId] = useState(null);
     const [highlightedRowId, setHighlightedRowId] = useState(null);
 

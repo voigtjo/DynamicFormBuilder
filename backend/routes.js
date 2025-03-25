@@ -47,7 +47,7 @@ router.post('/form', async (req, res) => {
       return handleError(res, ERROR_CODES.FORM_NAME_REQUIRED, 400);
     }
 
-    // Ensure position fields and row height
+    // Ensure position fields, row height, and control names
     rows.forEach((row) => {
       // Ensure row height is set
       if (row.height === undefined) {
@@ -55,11 +55,18 @@ router.post('/form', async (req, res) => {
       }
       
       row.webparts.forEach((webpart) => {
+        // Ensure position is set
         if (!webpart.position) {
           webpart.position = { row: 0, col: 0 };
         } else {
           if (webpart.position.row === undefined) webpart.position.row = 0;
           if (webpart.position.col === undefined) webpart.position.col = 0;
+        }
+        
+        // Ensure control has a name if it exists
+        if (webpart.control && !webpart.control.name) {
+          // Generate a unique name based on the control type and timestamp
+          webpart.control.name = `${webpart.control.type.toLowerCase()}_${Date.now()}`;
         }
       });
     });
