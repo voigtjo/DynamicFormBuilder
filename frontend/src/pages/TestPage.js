@@ -412,6 +412,5 @@ const TestPage = () => {
     </Box>
   );
 };
-);
 
 export default TestPage;
