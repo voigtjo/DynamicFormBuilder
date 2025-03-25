@@ -25,17 +25,30 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
     // Generate a unique name based on the control type and timestamp
     const uniqueName = `${control.type.toLowerCase()}_${Date.now()}`;
     
-    updateWebpart({
-      ...webpart,
-      control: {
-        type: control.type,
-        name: uniqueName, // Add a unique name for the control
-        isBusinessKey: false, // Default to false
-        isHeaderColumn: false, // Default to false
-        props: { label: control.label },
-        value: control.type === 'TextInputControl' ? '' : undefined,
-      },
-    });
+    // For Markdown controls, don't include businessKey or headerColumn properties
+    if (control.type === 'MarkdownControl') {
+      updateWebpart({
+        ...webpart,
+        control: {
+          type: control.type,
+          name: uniqueName,
+          props: { label: control.label },
+          value: undefined,
+        },
+      });
+    } else {
+      updateWebpart({
+        ...webpart,
+        control: {
+          type: control.type,
+          name: uniqueName,
+          isBusinessKey: false, // Default to false
+          isHeaderColumn: false, // Default to false
+          props: { label: control.label },
+          value: control.type === 'TextInputControl' ? '' : undefined,
+        },
+      });
+    }
   };
 
   const handleClick = () => {

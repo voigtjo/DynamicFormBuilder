@@ -264,38 +264,40 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
           </Tooltip>
         </Box>
         
-        {/* Data properties */}
-        <Box sx={{ mt: 2 }}>
-          <Typography variant="subtitle2" sx={{ fontSize: '0.9rem', marginBottom: 1 }}>
-            Data Properties:
-          </Typography>
-          
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Checkbox
-                checked={selectedWebpart.control?.isBusinessKey || false}
-                onChange={handleBusinessKeyChange}
-                size="small"
-              />
-              <Typography variant="body2">Business Key</Typography>
-              <Tooltip title="Only one field can be the business key. It uniquely identifies the record.">
-                <span style={{ marginLeft: '4px', cursor: 'help' }}>ⓘ</span>
-              </Tooltip>
-            </Box>
+        {/* Data properties - Hide for Markdown controls */}
+        {selectedWebpart.control?.type !== 'MarkdownControl' && (
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="subtitle2" sx={{ fontSize: '0.9rem', marginBottom: 1 }}>
+              Data Properties:
+            </Typography>
             
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Checkbox
-                checked={selectedWebpart.control?.isHeaderColumn || false}
-                onChange={handleHeaderColumnChange}
-                size="small"
-              />
-              <Typography variant="body2">Table Column</Typography>
-              <Tooltip title="This field will be displayed as a column in table views.">
-                <span style={{ marginLeft: '4px', cursor: 'help' }}>ⓘ</span>
-              </Tooltip>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Checkbox
+                  checked={selectedWebpart.control?.isBusinessKey || false}
+                  onChange={handleBusinessKeyChange}
+                  size="small"
+                />
+                <Typography variant="body2">Business Key</Typography>
+                <Tooltip title="Only one field can be the business key. It uniquely identifies the record.">
+                  <span style={{ marginLeft: '4px', cursor: 'help' }}>ⓘ</span>
+                </Tooltip>
+              </Box>
+              
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Checkbox
+                  checked={selectedWebpart.control?.isHeaderColumn || false}
+                  onChange={handleHeaderColumnChange}
+                  size="small"
+                />
+                <Typography variant="body2">Table Column</Typography>
+                <Tooltip title="This field will be displayed as a column in table views.">
+                  <span style={{ marginLeft: '4px', cursor: 'help' }}>ⓘ</span>
+                </Tooltip>
+              </Box>
             </Box>
           </Box>
-        </Box>
+        )}
       </Box>
     );
 
