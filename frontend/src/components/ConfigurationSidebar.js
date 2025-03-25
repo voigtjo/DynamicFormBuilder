@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Tooltip,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ChromePicker } from 'react-color';
@@ -26,6 +27,41 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
   if (!selectedWebpart) {
     return <Typography>Select a webpart to configure</Typography>;
   }
+  
+  const handleNameChange = (e) => {
+    updateWebpart({
+      ...selectedWebpart,
+      control: {
+        ...selectedWebpart.control,
+        name: e.target.value,
+      },
+    });
+  };
+  
+  const generateNameFromLabel = () => {
+    if (!selectedWebpart.control?.props?.label) {
+      alert('Please enter a label first');
+      return;
+    }
+    
+    // Generate a name based on the label: lowercase, replace spaces with underscores, remove special chars
+    const generatedName = selectedWebpart.control.props.label
+      .toLowerCase()
+      .replace(/\s+/g, '_')
+      .replace(/[^a-z0-9_]/g, '')
+      .substring(0, 30); // Limit length
+    
+    // Add a timestamp to ensure uniqueness
+    const uniqueName = `${generatedName}_${Date.now().toString().substring(8)}`;
+    
+    updateWebpart({
+      ...selectedWebpart,
+      control: {
+        ...selectedWebpart.control,
+        name: uniqueName,
+      },
+    });
+  };
 
   const handleLabelChange = (e) => {
     updateWebpart({
@@ -167,10 +203,40 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
   };
 
   const renderConfigurationFields = () => {
+    // Common fields for all control types
+    const commonFields = (
+      <Box sx={{ marginBottom: 2 }}>
+        <Typography variant="subtitle2" sx={{ fontSize: '0.9rem', marginBottom: 1 }}>
+          Control Name (unique identifier):
+        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <TextField
+            fullWidth
+            size="small"
+            value={selectedWebpart.control?.name || ''}
+            onChange={handleNameChange}
+            placeholder="Enter a unique name"
+            required
+          />
+          <Tooltip title="Generate name from label">
+            <Button 
+              variant="outlined" 
+              size="small" 
+              onClick={generateNameFromLabel}
+              sx={{ minWidth: 'auto', padding: '4px 8px' }}
+            >
+              ↻
+            </Button>
+          </Tooltip>
+        </Box>
+      </Box>
+    );
+
     switch (selectedWebpart.control?.type) {
       case 'MarkdownControl':
         return (
           <Box>
+            {commonFields}
             <Typography
               variant="subtitle2"
               sx={{ fontSize: '0.9rem', marginBottom: 1 }}
@@ -267,14 +333,17 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
         );
       default:
         return (
-          <TextField
-            label="Label"
-            value={selectedWebpart.control?.props?.label || ''}
-            onChange={handleLabelChange}
-            fullWidth
-            variant="outlined"
-            sx={{ mt: 2 }}
-          />
+          <Box>
+            {selectedWebpart.control ? commonFields : null}
+            <TextField
+              label="Label"
+              value={selectedWebpart.control?.props?.label || ''}
+              onChange={handleLabelChange}
+              fullWidth
+              variant="outlined"
+              sx={{ mt: 2 }}
+            />
+          </Box>
         );
     }
   };

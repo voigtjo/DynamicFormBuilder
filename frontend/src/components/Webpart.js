@@ -22,10 +22,14 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
   }));
 
   const assignControl = (control) => {
+    // Generate a unique name based on the control type and timestamp
+    const uniqueName = `${control.type.toLowerCase()}_${Date.now()}`;
+    
     updateWebpart({
       ...webpart,
       control: {
         type: control.type,
+        name: uniqueName, // Add a unique name for the control
         props: { label: control.label },
         value: control.type === 'TextInputControl' ? '' : undefined,
       },

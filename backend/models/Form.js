@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 // Define the Control schema
 const ControlSchema = new mongoose.Schema({
   type: { type: String, required: true }, // Type of control, e.g., 'LabelControl', 'TextInputControl'
+  name: { type: String, required: true }, // Unique name for the control to identify it in the database
   props: {
     label: { type: String, default: '' }, // Label for the control
     placeholder: { type: String, default: '' }, // Placeholder text for input fields
