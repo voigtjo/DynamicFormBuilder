@@ -264,6 +264,7 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
         );      case 'DropDownField':
         return (
           <Box>
+            {commonFields}
             <Typography variant="subtitle1" gutterBottom>
               Options:
             </Typography>
