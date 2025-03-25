@@ -152,4 +152,23 @@ router.get('/forms', async (req, res) => {
   }
 });
 
+// Delete a form by ID
+router.delete('/form/:id', async (req, res) => {
+  console.log(`DELETE /form/${req.params.id} called`);
+  try {
+    const form = await Form.findById(req.params.id);
+    if (!form) {
+      console.error(`Form not found: ${req.params.id}`);
+      return res.status(404).json(ERROR_CODES.FORM_NOT_FOUND);
+    }
+    
+    await Form.findByIdAndDelete(req.params.id);
+    console.log(`Form deleted successfully: ${req.params.id}`);
+    res.json({ message: 'Form deleted successfully', formId: req.params.id });
+  } catch (error) {
+    console.error('Unhandled error:', error);
+    return handleError(res, ERROR_CODES.INTERNAL_SERVER_ERROR, 500);
+  }
+});
+
 module.exports = router;

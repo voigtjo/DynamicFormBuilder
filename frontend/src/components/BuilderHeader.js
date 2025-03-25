@@ -3,8 +3,9 @@ import { Box, Button, IconButton, Typography } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-const BuilderHeader = ({ title, showActions, onSave, onCreateNew, onCopy, headerColor }) => (
+const BuilderHeader = ({ title, showActions, onSave, onCreateNew, onCopy, onDelete, headerColor }) => (
   <Box
     sx={{
       backgroundColor: headerColor || '#e0e0e0', // Dynamically set background color
@@ -67,6 +68,11 @@ const BuilderHeader = ({ title, showActions, onSave, onCreateNew, onCopy, header
         <IconButton color="info" onClick={onCopy}>
           <ContentCopyIcon />
         </IconButton>
+        {onDelete && (
+          <IconButton color="error" onClick={onDelete}>
+            <DeleteIcon />
+          </IconButton>
+        )}
       </Box>
     )}
   </Box>

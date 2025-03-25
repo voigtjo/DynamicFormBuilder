@@ -47,3 +47,20 @@ export const saveForm = async (form) => {
     throw error; // Propagate the error to be handled by the caller
   }
 };
+
+// Delete a form by ID
+export const deleteForm = async (formId) => {
+  try {
+    const response = await fetch(`/api/form/${formId}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      const errorDetails = await response.json(); // Parse backend error response
+      throw new Error(JSON.stringify(errorDetails));
+    }
+    return await response.json(); // Returns the delete confirmation
+  } catch (error) {
+    console.error('[api.js]_Error deleting form:', error);
+    throw error; // Propagate the error to be handled by the caller
+  }
+};

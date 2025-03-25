@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import FormEditor from './components/FormEditor';
 import BuilderHeader from './components/BuilderHeader';
-import { Box, Select, MenuItem, TextField } from '@mui/material';
-import { fetchForms, fetchForm, saveForm } from './api';
+import { Box, Select, MenuItem, TextField, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { fetchForms, fetchForm, saveForm, deleteForm } from './api';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
@@ -13,6 +14,7 @@ function FormBuilder() {
   const [headerColor, setHeaderColor] = useState('#e0e0e0'); // Default grey
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isNewForm, setIsNewForm] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     loadForms();
@@ -111,6 +113,29 @@ function FormBuilder() {
     setIsNewForm(true); // Enable editing the copied form name
   };
 
+  const handleDeleteForm = async () => {
+    if (!form._id) {
+      alert('Cannot delete a form that is not saved yet.');
+      return;
+    }
+
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteForm = async () => {
+    try {
+      await deleteForm(form._id);
+      setDeleteDialogOpen(false);
+      handleCreateNewForm(); // Reset the form
+      loadForms(); // Refresh the form list
+      setHeaderColor('#d0f8ce'); // Green for success
+    } catch (error) {
+      console.error('Error deleting form:', error);
+      setHeaderColor('#f8d0d0'); // Red for error
+      alert('Failed to delete the form. Please try again.');
+    }
+  };
+
   const handleFormChange = () => {
     setHasUnsavedChanges(true);
     setHeaderColor('#e0e0e0'); // Grey indicates unsaved changes
@@ -130,7 +155,27 @@ function FormBuilder() {
         onSave={handleSave}
         onCreateNew={handleCreateNewForm}
         onCopy={handleCopyForm}
+        onDelete={form._id ? handleDeleteForm : null}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
+        <DialogTitle>Delete Form</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete the form "{formName}"? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={confirmDeleteForm} color="error" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Box
         sx={{
           display: 'flex',
