@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const ControlSchema = new mongoose.Schema({
   type: { type: String, required: true }, // Type of control, e.g., 'LabelControl', 'TextInputControl'
   name: { type: String, required: true }, // Unique name for the control to identify it in the database
+  isBusinessKey: { type: Boolean, default: false }, // Flag to mark this control as the business key
+  isHeaderColumn: { type: Boolean, default: false }, // Flag to mark this control for table column display
   props: {
     label: { type: String, default: '' }, // Label for the control
     placeholder: { type: String, default: '' }, // Placeholder text for input fields

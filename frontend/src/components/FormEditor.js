@@ -21,14 +21,34 @@
       if (!selectedWebpartId) return;
     
       setLayout((prevLayout) => {
+        // If the new control has isBusinessKey set to true, we need to unset any existing business key
+        let needToUnsetOtherBusinessKeys = control.isBusinessKey;
+        
         const updatedRows = prevLayout.rows.map((row) => ({
           ...row,
-          webparts: row.webparts.map((webpart) =>
-            webpart.id === selectedWebpartId
-              ? { ...webpart, control }
-              : webpart
-          ),
+          webparts: row.webparts.map((webpart) => {
+            // If this is the selected webpart, update it with the new control
+            if (webpart.id === selectedWebpartId) {
+              return { ...webpart, control };
+            }
+            
+            // If we need to unset other business keys and this webpart has a control with isBusinessKey=true
+            if (needToUnsetOtherBusinessKeys && 
+                webpart.control && 
+                webpart.control.isBusinessKey) {
+              return {
+                ...webpart,
+                control: {
+                  ...webpart.control,
+                  isBusinessKey: false
+                }
+              };
+            }
+            
+            return webpart;
+          }),
         }));
+        
         return { ...prevLayout, rows: updatedRows };
       });
     };

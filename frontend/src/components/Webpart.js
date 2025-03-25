@@ -30,6 +30,8 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
       control: {
         type: control.type,
         name: uniqueName, // Add a unique name for the control
+        isBusinessKey: false, // Default to false
+        isHeaderColumn: false, // Default to false
         props: { label: control.label },
         value: control.type === 'TextInputControl' ? '' : undefined,
       },

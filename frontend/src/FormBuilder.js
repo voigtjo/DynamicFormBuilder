@@ -35,6 +35,25 @@ function FormBuilder() {
       alert('Please provide a name for the form');
       return;
     }
+    
+    // Validate that there's at most one business key
+    let businessKeyCount = 0;
+    let businessKeyName = '';
+    
+    form.rows.forEach(row => {
+      row.webparts.forEach(webpart => {
+        if (webpart.control && webpart.control.isBusinessKey) {
+          businessKeyCount++;
+          businessKeyName = webpart.control.props.label || webpart.control.name;
+        }
+      });
+    });
+    
+    if (businessKeyCount > 1) {
+      alert('There can only be one business key in a form. Please check your form configuration.');
+      setHeaderColor('#f8d0d0'); // Red for error
+      return;
+    }
   
     const newForm = { ...form, name: formName };
   

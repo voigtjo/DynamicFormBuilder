@@ -14,6 +14,7 @@ import {
   DialogContent,
   DialogActions,
   Tooltip,
+  Checkbox,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ChromePicker } from 'react-color';
@@ -34,6 +35,39 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
       control: {
         ...selectedWebpart.control,
         name: e.target.value,
+      },
+    });
+  };
+  
+  const handleBusinessKeyChange = (e) => {
+    // If this control is being set as business key, we need to unset any other business key
+    if (e.target.checked) {
+      // This would ideally update all webparts in all rows, but we don't have access to the full layout here
+      // The form editor component will need to handle this when saving the form
+      updateWebpart({
+        ...selectedWebpart,
+        control: {
+          ...selectedWebpart.control,
+          isBusinessKey: true,
+        },
+      });
+    } else {
+      updateWebpart({
+        ...selectedWebpart,
+        control: {
+          ...selectedWebpart.control,
+          isBusinessKey: false,
+        },
+      });
+    }
+  };
+  
+  const handleHeaderColumnChange = (e) => {
+    updateWebpart({
+      ...selectedWebpart,
+      control: {
+        ...selectedWebpart.control,
+        isHeaderColumn: e.target.checked,
       },
     });
   };
@@ -228,6 +262,39 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
               ↻
             </Button>
           </Tooltip>
+        </Box>
+        
+        {/* Data properties */}
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="subtitle2" sx={{ fontSize: '0.9rem', marginBottom: 1 }}>
+            Data Properties:
+          </Typography>
+          
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Checkbox
+                checked={selectedWebpart.control?.isBusinessKey || false}
+                onChange={handleBusinessKeyChange}
+                size="small"
+              />
+              <Typography variant="body2">Business Key</Typography>
+              <Tooltip title="Only one field can be the business key. It uniquely identifies the record.">
+                <span style={{ marginLeft: '4px', cursor: 'help' }}>ⓘ</span>
+              </Tooltip>
+            </Box>
+            
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Checkbox
+                checked={selectedWebpart.control?.isHeaderColumn || false}
+                onChange={handleHeaderColumnChange}
+                size="small"
+              />
+              <Typography variant="body2">Table Column</Typography>
+              <Tooltip title="This field will be displayed as a column in table views.">
+                <span style={{ marginLeft: '4px', cursor: 'help' }}>ⓘ</span>
+              </Tooltip>
+            </Box>
+          </Box>
         </Box>
       </Box>
     );
