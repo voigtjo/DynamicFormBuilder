@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Form = require('./models/Form');
+const Test = require('./models/Test');
 
 const ERROR_CODES = {
   FORM_NAME_EXISTS: {
@@ -172,6 +173,124 @@ router.delete('/form/:id', async (req, res) => {
     await Form.findByIdAndDelete(req.params.id);
     console.log(`Form deleted successfully: ${req.params.id}`);
     res.json({ message: 'Form deleted successfully', formId: req.params.id });
+  } catch (error) {
+    console.error('Unhandled error:', error);
+    return handleError(res, ERROR_CODES.INTERNAL_SERVER_ERROR, 500);
+  }
+});
+
+// Test Data Routes
+// Get all test data for a specific form
+router.get('/test/:formName', async (req, res) => {
+  console.log(`GET /test/${req.params.formName} called`);
+  try {
+    const testData = await Test.find({ formName: req.params.formName });
+    res.json(testData);
+  } catch (error) {
+    console.error('Unhandled error:', error);
+    return handleError(res, ERROR_CODES.INTERNAL_SERVER_ERROR, 500);
+  }
+});
+
+// Get a specific test data entry by form name and business key
+router.get('/test/:formName/:businessKey', async (req, res) => {
+  console.log(`GET /test/${req.params.formName}/${req.params.businessKey} called`);
+  try {
+    const testData = await Test.findOne({ 
+      formName: req.params.formName,
+      businessKey: req.params.businessKey
+    });
+    
+    if (!testData) {
+      return res.status(404).json({ 
+        code: 'TEST_DATA_NOT_FOUND',
+        message: 'Test data not found'
+      });
+    }
+    
+    res.json(testData);
+  } catch (error) {
+    console.error('Unhandled error:', error);
+    return handleError(res, ERROR_CODES.INTERNAL_SERVER_ERROR, 500);
+  }
+});
+
+// Create or update test data
+router.post('/test', async (req, res) => {
+  console.log('POST /test called');
+  try {
+    const { formName, businessKey, data } = req.body;
+    
+    if (!formName || !businessKey) {
+      return res.status(400).json({
+        code: 'MISSING_REQUIRED_FIELDS',
+        message: 'Form name and business key are required'
+      });
+    }
+    
+    // Check if the form exists
+    const form = await Form.findOne({ name: formName });
+    if (!form) {
+      return res.status(404).json({
+        code: 'FORM_NOT_FOUND',
+        message: 'The specified form does not exist'
+      });
+    }
+    
+    // Try to find existing test data
+    let testData = await Test.findOne({ formName, businessKey });
+    
+    if (testData) {
+      // Update existing test data
+      testData.data = data;
+      testData.updatedAt = Date.now();
+      await testData.save();
+      res.json({ message: 'Test data updated successfully', testData });
+    } else {
+      // Create new test data
+      testData = new Test({
+        formName,
+        businessKey,
+        data,
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      });
+      
+      await testData.save();
+      res.json({ message: 'Test data created successfully', testData });
+    }
+  } catch (error) {
+    console.error('Unhandled error:', error);
+    
+    // Check for duplicate key error
+    if (error.code === 11000) {
+      return res.status(400).json({
+        code: 'DUPLICATE_BUSINESS_KEY',
+        message: 'A record with this business key already exists for this form'
+      });
+    }
+    
+    return handleError(res, ERROR_CODES.INTERNAL_SERVER_ERROR, 500);
+  }
+});
+
+// Delete test data
+router.delete('/test/:formName/:businessKey', async (req, res) => {
+  console.log(`DELETE /test/${req.params.formName}/${req.params.businessKey} called`);
+  try {
+    const result = await Test.findOneAndDelete({ 
+      formName: req.params.formName,
+      businessKey: req.params.businessKey
+    });
+    
+    if (!result) {
+      return res.status(404).json({
+        code: 'TEST_DATA_NOT_FOUND',
+        message: 'Test data not found'
+      });
+    }
+    
+    res.json({ message: 'Test data deleted successfully' });
   } catch (error) {
     console.error('Unhandled error:', error);
     return handleError(res, ERROR_CODES.INTERNAL_SERVER_ERROR, 500);

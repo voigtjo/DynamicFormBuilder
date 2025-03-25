@@ -11,6 +11,8 @@ function App() {
       <Routes>
         <Route path="/" element={<FormBuilder />} />
         <Route path="/test" element={<TestPage />} />
+        <Route path="/test/form/:formName/list" element={<TestPage />} />
+        <Route path="/test/form/:formName/businessKey/:businessKey/edit" element={<TestPage />} />
         <Route path="/build" element={<BuildPage />} />
         <Route path="/prod" element={<ProdPage />} />
       </Routes>
