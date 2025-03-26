@@ -19,6 +19,7 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import DescriptionIcon from '@mui/icons-material/Description';
+import ImageIcon from '@mui/icons-material/Image';
 
 const ControlsSidebar = ({ assignControl }) => {
   const controls = [
@@ -31,6 +32,7 @@ const ControlsSidebar = ({ assignControl }) => {
     { type: 'BooleanCheckbox', label: 'Checkbox', icon: <CheckBoxIcon /> },
     { type: 'Dateselector', label: 'Date Selector', icon: <CalendarMonthIcon /> },
     { type: 'DropDownField', label: 'DropDown', icon: <ArrowDropDownIcon /> },
+    { type: 'ImageControl', label: 'Image', icon: <ImageIcon /> },
   ];
 
   return (
