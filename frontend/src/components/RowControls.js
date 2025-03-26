@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { IconButton, Box, Switch, Typography, Slider } from '@mui/material';
+import DistributionInput from './DistributionInput';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import AddIcon from '@mui/icons-material/Add';
@@ -13,10 +14,20 @@ const RowControls = ({
   addRow,
   deleteRow,
   setHighlightedRowId,
-  updateRow, // Add this prop
+  updateRow,
   rows = [],
 }) => {
   const selectedRow = rows.find((row) => row.rowId === highlightedRowId);
+  const [showDistribution, setShowDistribution] = useState(false);
+  
+  // Show distribution controls only when a row is selected and has multiple webparts in flex mode
+  useEffect(() => {
+    if (selectedRow && selectedRow.webparts.length > 1 && selectedRow.flexWebpartWidth !== false) {
+      setShowDistribution(true);
+    } else {
+      setShowDistribution(false);
+    }
+  }, [selectedRow]);
 
   const handleSwitchChange = (event) => {
     const isManualMode = event.target.checked;
@@ -105,6 +116,24 @@ const RowControls = ({
               valueLabelFormat={(value) => `${value}px`}
             />
           </Box>
+          
+          {/* Distribution Input */}
+          {showDistribution && (
+            <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 2 }}>
+              <DistributionInput
+                rowId={selectedRow.rowId}
+                webpartsCount={selectedRow.webparts.length}
+                distribution={selectedRow.distribution}
+                onDistributionChange={(rowId, distribution, percentages) => {
+                  updateRow({
+                    ...selectedRow,
+                    distribution: distribution,
+                    distributionPercentages: percentages
+                  });
+                }}
+              />
+            </Box>
+          )}
         </>
       )}
     </Box>
