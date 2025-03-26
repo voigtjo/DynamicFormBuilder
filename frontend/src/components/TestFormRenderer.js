@@ -30,6 +30,41 @@ const TestFormRenderer = ({ form, formData, onFormDataChange }) => {
     const value = formData[control.name] || '';
     
     switch (control.type) {
+      case 'ImageControl':
+        return (
+          <Box sx={{ width: '100%', textAlign: 'center' }}>
+            {control.props.imageData ? (
+              <Box 
+                component="img" 
+                src={control.props.imageData}
+                alt={control.props.label || "Image"}
+                sx={{ 
+                  maxWidth: '100%', 
+                  maxHeight: '100%',
+                  objectFit: 'contain',
+                }}
+              />
+            ) : (
+              <Box 
+                sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '1px dashed #ccc',
+                  borderRadius: '4px',
+                  padding: 2,
+                  minHeight: '100px',
+                }}
+              >
+                <Typography variant="body2" color="textSecondary">
+                  No image available
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        );
+        
       case 'MarkdownControl':
         return (
           <Box

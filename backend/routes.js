@@ -228,6 +228,23 @@ router.post('/test', async (req, res) => {
       });
     }
     
+    // Check for image data size limits
+    const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB in bytes
+    
+    // Validate image sizes in the data
+    for (const key in data) {
+      if (data[key] && typeof data[key] === 'string' && data[key].startsWith('data:image/')) {
+        // Calculate approximate size of base64 string
+        const base64Size = Math.ceil((data[key].length * 3) / 4);
+        if (base64Size > MAX_IMAGE_SIZE) {
+          return res.status(400).json({
+            code: 'IMAGE_TOO_LARGE',
+            message: `Image ${key} exceeds the maximum size of 2MB`
+          });
+        }
+      }
+    }
+    
     // Check if the form exists
     const form = await Form.findOne({ name: formName });
     if (!form) {

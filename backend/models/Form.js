@@ -18,6 +18,9 @@ const ControlSchema = new mongoose.Schema({
       },
     ],
     markdownContent: { type: String, default: '' }, // Add markdownContent explicitly
+    imageData: { type: String, default: '' }, // Base64 encoded image data
+    imageType: { type: String, default: '' }, // MIME type of the image
+    imageSize: { type: Number, default: 0 }, // Size of the image in bytes
   },
 });
 

@@ -15,7 +15,9 @@ import {
   DialogActions,
   Tooltip,
   Checkbox,
+  Alert,
 } from '@mui/material';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloseIcon from '@mui/icons-material/Close';
 import { ChromePicker } from 'react-color';
 import { marked } from 'marked'; // Import for Markdown rendering
@@ -302,6 +304,106 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
     );
 
     switch (selectedWebpart.control?.type) {
+      case 'ImageControl':
+        return (
+          <Box>
+            {commonFields}
+            <Typography variant="subtitle2" sx={{ fontSize: '0.9rem', marginBottom: 1 }}>
+              Image Upload:
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Button
+                variant="contained"
+                component="label"
+                startIcon={<CloudUploadIcon />}
+              >
+                Upload Image
+                <input
+                  type="file"
+                  hidden
+                  accept="image/jpeg,image/png,image/gif,image/webp"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    // Check file size (limit to 2MB)
+                    if (file.size > 2 * 1024 * 1024) {
+                      alert('Image size must be less than 2MB');
+                      return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                      updateWebpart({
+                        ...selectedWebpart,
+                        control: {
+                          ...selectedWebpart.control,
+                          props: {
+                            ...selectedWebpart.control.props,
+                            imageData: event.target.result,
+                            imageType: file.type,
+                            imageSize: file.size,
+                          },
+                        },
+                      });
+                    };
+                    reader.readAsDataURL(file);
+                  }}
+                />
+              </Button>
+              
+              {selectedWebpart.control?.props?.imageData && (
+                <Box>
+                  <Typography variant="body2" gutterBottom>
+                    Preview:
+                  </Typography>
+                  <Box 
+                    component="img" 
+                    src={selectedWebpart.control.props.imageData}
+                    alt="Uploaded image"
+                    sx={{ 
+                      maxWidth: '100%', 
+                      maxHeight: '200px',
+                      objectFit: 'contain',
+                      border: '1px solid #ccc',
+                      borderRadius: '4px',
+                    }}
+                  />
+                  <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+                    Size: {Math.round(selectedWebpart.control.props.imageSize / 1024)} KB
+                  </Typography>
+                  <Button 
+                    variant="outlined" 
+                    color="error" 
+                    size="small"
+                    sx={{ mt: 1 }}
+                    onClick={() => {
+                      updateWebpart({
+                        ...selectedWebpart,
+                        control: {
+                          ...selectedWebpart.control,
+                          props: {
+                            ...selectedWebpart.control.props,
+                            imageData: '',
+                            imageType: '',
+                            imageSize: 0,
+                          },
+                        },
+                      });
+                    }}
+                  >
+                    Remove Image
+                  </Button>
+                </Box>
+              )}
+              
+              <Alert severity="info" sx={{ mt: 1 }}>
+                Supported formats: JPEG, PNG, GIF, WebP. Max size: 2MB.
+              </Alert>
+            </Box>
+          </Box>
+        );
+      
       case 'MarkdownControl':
         return (
           <Box>

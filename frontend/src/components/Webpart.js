@@ -10,6 +10,7 @@ import {
   FormControl,
   InputLabel,
 } from '@mui/material';
+import ImageIcon from '@mui/icons-material/Image';
 import { marked } from 'marked'; // Use marked for Markdown rendering
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -61,6 +62,43 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
     }
 
     switch (webpart.control.type) {
+      case 'ImageControl':
+        return (
+          <Box sx={{ width: '100%', textAlign: 'center' }}>
+            {webpart.control.props.imageData ? (
+              <Box 
+                component="img" 
+                src={webpart.control.props.imageData}
+                alt={webpart.control.props.label || "Image"}
+                sx={{ 
+                  maxWidth: '100%', 
+                  maxHeight: '100%',
+                  objectFit: 'contain',
+                }}
+              />
+            ) : (
+              <Box 
+                sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '1px dashed #ccc',
+                  borderRadius: '4px',
+                  padding: 2,
+                  height: '100%',
+                  minHeight: '100px',
+                }}
+              >
+                <ImageIcon sx={{ fontSize: 40, color: '#aaa', mb: 1 }} />
+                <Typography variant="body2" color="textSecondary">
+                  {webpart.control.props.label || "Image placeholder"}
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        );
+        
       case 'MarkdownControl':
         return (
           <Box
