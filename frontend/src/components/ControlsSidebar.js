@@ -33,8 +33,6 @@ const ControlsSidebar = ({ assignControl }) => {
     { type: 'Dateselector', label: 'Date Selector', icon: <CalendarMonthIcon /> },
     { type: 'DropDownField', label: 'DropDown', icon: <ArrowDropDownIcon /> },
     { type: 'ImageControl', label: 'Image', icon: <ImageIcon /> },
-    { type: 'DropDownField', label: 'DropDown', icon: <ArrowDropDownIcon /> },
-    { type: 'ImageControl', label: 'Image', icon: <ImageIcon /> },
   ];
 
   return (
