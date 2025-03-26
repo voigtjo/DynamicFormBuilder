@@ -141,6 +141,14 @@ const TestPage = () => {
       return;
     }
     
+    // Check if the form has a business key field defined
+    const { businessKeyControl } = getBusinessKeyAndHeaderColumns();
+    if (!businessKeyControl) {
+      alert('This form does not have a business key field defined. Please mark one field as a business key in the form builder.');
+      setDialogOpen(false);
+      return;
+    }
+    
     setDialogOpen(false);
     navigate(`/test/form/${formName}/businessKey/${newBusinessKey}/edit`);
   };
@@ -148,6 +156,7 @@ const TestPage = () => {
   // Handle saving form data
   const handleSaveFormData = async () => {
     try {
+      // Use the businessKey from the URL parameter
       await saveTestData({
         formName,
         businessKey,

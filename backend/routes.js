@@ -237,6 +237,23 @@ router.post('/test', async (req, res) => {
       });
     }
     
+    // Validate that the form has a business key field
+    let hasBusinessKeyField = false;
+    form.rows.forEach(row => {
+      row.webparts.forEach(webpart => {
+        if (webpart.control && webpart.control.isBusinessKey) {
+          hasBusinessKeyField = true;
+        }
+      });
+    });
+    
+    if (!hasBusinessKeyField) {
+      return res.status(400).json({
+        code: 'NO_BUSINESS_KEY_FIELD',
+        message: 'The form does not have a business key field defined'
+      });
+    }
+    
     // Try to find existing test data
     let testData = await Test.findOne({ formName, businessKey });
     

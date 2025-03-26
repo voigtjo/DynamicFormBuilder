@@ -160,22 +160,40 @@ const TestFormRenderer = ({ form, formData, onFormDataChange }) => {
   };
 
   return (
-    <Paper sx={{ p: 3 }}>
+    <Paper sx={{ p: 3, maxWidth: '100%' }}>
       {form.rows.map((row, rowIndex) => (
-        <Grid container spacing={2} key={row.rowId || rowIndex} sx={{ mb: 2 }}>
-          {row.webparts.map((webpart, wpIndex) => {
-            // Calculate width based on the webpart's width property or equal distribution
-            const width = webpart.width || Math.floor(12 / row.webparts.length);
-            
-            return (
-              <Grid item xs={12} sm={width} key={webpart.id || wpIndex}>
-                <Box sx={{ p: 1 }}>
-                  {renderControl(webpart)}
-                </Box>
-              </Grid>
-            );
-          })}
-        </Grid>
+        <Box 
+          key={row.rowId || rowIndex} 
+          sx={{ 
+            mb: 2,
+            height: row.height ? `${row.height}px` : 'auto',
+            display: 'flex',
+            flexDirection: 'row'
+          }}
+        >
+          <Grid container spacing={2} sx={{ width: '100%' }}>
+            {row.webparts.map((webpart, wpIndex) => {
+              // Use the same width calculation logic as in the form builder
+              const width = row.flexWebpartWidth 
+                ? Math.floor(12 / row.webparts.length) 
+                : (webpart.width || Math.floor(12 / row.webparts.length));
+              
+              return (
+                <Grid item xs={12} md={width} key={webpart.id || wpIndex}>
+                  <Box sx={{ 
+                    p: 1, 
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center'
+                  }}>
+                    {renderControl(webpart)}
+                  </Box>
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Box>
       ))}
     </Paper>
   );
