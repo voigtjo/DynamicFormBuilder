@@ -119,6 +119,7 @@ const Row = ({
               />
             </Box>
           ))}
+          </Box>
         </Box>
       ) : (
         // Button to add webpart to empty row
