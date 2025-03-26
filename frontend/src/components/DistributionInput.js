@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Typography, Tooltip } from '@mui/material';
+import { Box, TextField, Typography, Tooltip, IconButton } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
 
 const DistributionInput = ({ rowId, webpartsCount, distribution, onDistributionChange }) => {
   const [inputValue, setInputValue] = useState('');
@@ -18,7 +19,7 @@ const DistributionInput = ({ rowId, webpartsCount, distribution, onDistributionC
     setInputValue(e.target.value);
   };
 
-  const handleBlur = () => {
+  const applyDistribution = () => {
     // Validate the input
     const colonCount = (inputValue.match(/:/g) || []).length;
     
@@ -45,6 +46,12 @@ const DistributionInput = ({ rowId, webpartsCount, distribution, onDistributionC
     onDistributionChange(rowId, inputValue, percentages);
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      applyDistribution();
+    }
+  };
+
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
       <Tooltip title={`Enter distribution ratios (e.g., ${webpartsCount === 2 ? '2:1' : '2:1:1'} for uneven distribution)`}>
@@ -55,11 +62,19 @@ const DistributionInput = ({ rowId, webpartsCount, distribution, onDistributionC
       <TextField
         value={inputValue}
         onChange={handleInputChange}
-        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
         size="small"
         sx={{ width: '80px' }}
         inputProps={{ style: { textAlign: 'center' } }}
       />
+      <IconButton 
+        size="small" 
+        onClick={applyDistribution}
+        color="primary"
+        sx={{ padding: '2px' }}
+      >
+        <CheckIcon fontSize="small" />
+      </IconButton>
     </Box>
   );
 };

@@ -1,6 +1,5 @@
 import React from 'react';
 import Webpart from './Webpart';
-import DistributionInput from './DistributionInput';
 import { Box, Button, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import TouchAppIcon from '@mui/icons-material/TouchApp';
@@ -70,24 +69,6 @@ const Row = ({
       {/* Webparts */}
       {row.webparts.length > 0 ? (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-          {/* Distribution Input */}
-          {row.flexWebpartWidth !== false && row.webparts.length > 1 && (
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
-              <DistributionInput
-                rowId={row.rowId}
-                webpartsCount={row.webparts.length}
-                distribution={row.distribution}
-                onDistributionChange={(rowId, distribution, percentages) => {
-                  updateRow({
-                    ...row,
-                    distribution: distribution,
-                    distributionPercentages: percentages
-                  });
-                }}
-              />
-            </Box>
-          )}
-          
           {/* Webparts Container */}
           <Box
             sx={{
