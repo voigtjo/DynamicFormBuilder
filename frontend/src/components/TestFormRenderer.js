@@ -209,9 +209,20 @@ const TestFormRenderer = ({ form, formData, onFormDataChange }) => {
           <Grid container spacing={2} sx={{ width: '100%' }}>
             {row.webparts.map((webpart, wpIndex) => {
               // Use the same width calculation logic as in the form builder
-              const width = row.flexWebpartWidth 
-                ? Math.floor(12 / row.webparts.length) 
-                : (webpart.width || Math.floor(12 / row.webparts.length));
+              let width;
+              
+              if (row.flexWebpartWidth) {
+                if (row.distributionPercentages && row.distributionPercentages.length === row.webparts.length) {
+                  // Use the distribution percentages to calculate grid width (out of 12)
+                  width = Math.round((row.distributionPercentages[wpIndex] / 100) * 12);
+                } else {
+                  // Default equal distribution
+                  width = Math.floor(12 / row.webparts.length);
+                }
+              } else {
+                // Fixed width mode
+                width = webpart.width || Math.floor(12 / row.webparts.length);
+              }
               
               return (
                 <Grid item xs={12} md={width} key={webpart.id || wpIndex}>

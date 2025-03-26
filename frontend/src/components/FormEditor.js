@@ -40,7 +40,13 @@
 
     useEffect(() => {
       if (layout.rows.length === 0) {
-        const initialRow = { rowId: `row-${Date.now()}`, webparts: [], height: 100 };
+        const initialRow = { 
+          rowId: `row-${Date.now()}`, 
+          webparts: [], 
+          height: 100,
+          distribution: '',
+          distributionPercentages: []
+        };
         setLayout({ ...layout, rows: [initialRow] });
       }
     }, [layout, setLayout]);
@@ -97,7 +103,13 @@
     };
 
     const addRow = (position = 'end', targetRowId = null) => {
-      const newRow = { rowId: `row-${Date.now()}`, webparts: [], height: 100 };
+      const newRow = { 
+        rowId: `row-${Date.now()}`, 
+        webparts: [], 
+        height: 100,
+        distribution: '',
+        distributionPercentages: []
+      };
       const updatedRows =
         position === 'top'
           ? [newRow, ...layout.rows]
@@ -110,6 +122,13 @@
     };
 
     const updateRow = (updatedRow) => {
+      // If the number of webparts changed, reset the distribution
+      const existingRow = layout.rows.find(row => row.rowId === updatedRow.rowId);
+      if (existingRow && existingRow.webparts.length !== updatedRow.webparts.length) {
+        updatedRow.distribution = '';
+        updatedRow.distributionPercentages = [];
+      }
+      
       const updatedRows = layout.rows.map((row) =>
         row.rowId === updatedRow.rowId ? updatedRow : row
       );
@@ -237,6 +256,9 @@
           ...selectedRow,
           flexWebpartWidth: false,
           webparts: updatedWebparts,
+          // Reset distribution when switching to fixed mode
+          distribution: '',
+          distributionPercentages: []
         };
     
         updateRow(updatedRow);
