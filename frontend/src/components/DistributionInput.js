@@ -42,6 +42,8 @@ const DistributionInput = ({ rowId, webpartsCount, distribution, onDistributionC
     // Calculate the percentage for each part
     const percentages = parts.map(part => (part / sum) * 100);
     
+    console.log(`Applied distribution: ${inputValue}, percentages: ${percentages.join(', ')}`);
+    
     // Update the distribution
     onDistributionChange(rowId, inputValue, percentages);
   };

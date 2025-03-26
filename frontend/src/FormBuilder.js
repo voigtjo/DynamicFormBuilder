@@ -88,11 +88,13 @@ function FormBuilder() {
     try {
       const loadedForm = await fetchForm(name);
       
-      // Ensure each row has a height property and each control has a name
+      // Ensure each row has a height property, distribution settings, and each control has a name
       if (loadedForm && loadedForm.rows) {
         loadedForm.rows = loadedForm.rows.map(row => ({
           ...row,
           height: row.height || 100, // Default to 100 if height is missing
+          distribution: row.distribution || '', // Ensure distribution property exists
+          distributionPercentages: row.distributionPercentages || [], // Ensure distributionPercentages property exists
           webparts: row.webparts.map(webpart => {
             // Ensure control has a name if it exists
             if (webpart.control && !webpart.control.name) {

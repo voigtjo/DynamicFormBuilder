@@ -74,7 +74,7 @@ const Row = ({
             sx={{
               display: 'grid',
               gridTemplateColumns: row.flexWebpartWidth !== false
-                ? row.distributionPercentages && row.distributionPercentages.length > 0
+                ? row.distributionPercentages && row.distributionPercentages.length === row.webparts.length
                   ? row.distributionPercentages.map(p => `${p}%`).join(' ')
                   : `repeat(${row.webparts.length}, 1fr)`
                 : 'repeat(12, 1fr)',

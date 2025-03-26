@@ -215,6 +215,8 @@ const TestFormRenderer = ({ form, formData, onFormDataChange }) => {
                 if (row.distributionPercentages && row.distributionPercentages.length === row.webparts.length) {
                   // Use the distribution percentages to calculate grid width (out of 12)
                   width = Math.round((row.distributionPercentages[wpIndex] / 100) * 12);
+                  // Ensure minimum width of 1
+                  width = Math.max(1, width);
                 } else {
                   // Default equal distribution
                   width = Math.floor(12 / row.webparts.length);
