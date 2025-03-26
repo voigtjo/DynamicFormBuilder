@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { IconButton, Box, Switch, Typography, Slider } from '@mui/material';
 import DistributionInput from './DistributionInput';
+import FrameSettings from './FrameSettings';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import AddIcon from '@mui/icons-material/Add';
@@ -134,6 +135,20 @@ const RowControls = ({
               />
             </Box>
           )}
+          
+          {/* Frame Settings */}
+          <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 2 }}>
+            <FrameSettings
+              rowId={selectedRow.rowId}
+              frame={selectedRow.frame}
+              onFrameChange={(rowId, frameSettings) => {
+                updateRow({
+                  ...selectedRow,
+                  frame: frameSettings
+                });
+              }}
+            />
+          </Box>
         </>
       )}
     </Box>

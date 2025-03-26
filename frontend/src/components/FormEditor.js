@@ -45,7 +45,12 @@
           webparts: [], 
           height: 100,
           distribution: '',
-          distributionPercentages: []
+          distributionPercentages: [],
+          frame: {
+            enabled: false,
+            style: 'solid',
+            thickness: 'thin'
+          }
         };
         setLayout({ ...layout, rows: [initialRow] });
       }
@@ -108,7 +113,12 @@
         webparts: [], 
         height: 100,
         distribution: '',
-        distributionPercentages: []
+        distributionPercentages: [],
+        frame: {
+          enabled: false,
+          style: 'solid',
+          thickness: 'thin'
+        }
       };
       const updatedRows =
         position === 'top'

@@ -14,8 +14,23 @@ const Row = ({
   isHighlighted,
   highlightRow,
 }) => {
+  // Determine border style based on frame settings
+  const getBorderStyle = () => {
+    if (isHighlighted) {
+      return '2px solid #007FFF'; // Highlighted row always has this border
+    }
+    
+    if (row.frame && row.frame.enabled) {
+      const style = row.frame.style || 'solid';
+      const thickness = row.frame.thickness === 'thick' ? '3px' : '1px';
+      return `${thickness} ${style} #333`;
+    }
+    
+    return '2px dotted lightgray'; // Default border
+  };
+
   const rowStyle = {
-    border: isHighlighted ? '2px solid #007FFF' : '2px dotted lightgray',
+    border: getBorderStyle(),
     backgroundColor: isHighlighted ? '#E3F2FD' : '#fefefe',
     borderRadius: '8px',
     padding: 0.5,

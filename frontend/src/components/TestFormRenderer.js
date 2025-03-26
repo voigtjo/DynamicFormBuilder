@@ -203,7 +203,12 @@ const TestFormRenderer = ({ form, formData, onFormDataChange }) => {
             mb: 2,
             height: row.height ? `${row.height}px` : 'auto',
             display: 'flex',
-            flexDirection: 'row'
+            flexDirection: 'row',
+            border: row.frame && row.frame.enabled ? 
+              `${row.frame.thickness === 'thick' ? '3px' : '1px'} ${row.frame.style} #333` : 
+              'none',
+            borderRadius: '8px',
+            padding: row.frame && row.frame.enabled ? 1 : 0
           }}
         >
           <Grid container spacing={2} sx={{ width: '100%' }}>

@@ -47,6 +47,11 @@ const RowSchema = new mongoose.Schema({
   height: { type: Number, default: 100 }, // Default height for rows
   distribution: { type: String, default: '' }, // Distribution string (e.g., "2:1")
   distributionPercentages: [{ type: Number }], // Calculated percentages for each webpart
+  frame: {
+    enabled: { type: Boolean, default: false },
+    style: { type: String, enum: ['solid', 'dotted'], default: 'solid' },
+    thickness: { type: String, enum: ['thin', 'thick'], default: 'thin' }
+  }
 });
 
 // Define the Layout schema
