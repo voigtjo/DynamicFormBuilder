@@ -312,6 +312,7 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
                     e.stopPropagation();
                     assignControl({ 
                       type: 'LabelControl', 
+                      name: `label_${Date.now()}`,
                       props: { label: 'New Label' }
                     });
                   }}
@@ -333,6 +334,7 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
                     e.stopPropagation();
                     assignControl({ 
                       type: 'LabelControl', 
+                      name: `label_${Date.now()}`,
                       props: { label: 'New Label' }
                     });
                   }}

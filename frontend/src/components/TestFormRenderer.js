@@ -48,6 +48,11 @@ const TestFormRenderer = ({ form, formData, onFormDataChange }) => {
   const renderSingleControl = (control) => {
     if (!control) return null;
 
+    // Ensure control.props exists to prevent "Cannot read properties of undefined" errors
+    if (!control.props) {
+      control.props = { label: control.label || 'Unnamed Control' };
+    }
+
     const value = formData[control.name] || '';
     
     switch (control.type) {
