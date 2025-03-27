@@ -113,7 +113,11 @@ const TestFormRenderer = ({ form, formData, onFormDataChange }) => {
             variant="body1" 
             sx={{ 
               width: '100%',
-              textAlign: webpart?.horizontalAlign || 'left'
+              textAlign: webpart?.horizontalAlign || 'left',
+              fontWeight: control.props?.textFormatting?.bold ? 'bold' : 'normal',
+              fontStyle: control.props?.textFormatting?.italic ? 'italic' : 'normal',
+              textDecoration: control.props?.textFormatting?.underline ? 'underline' : 'none',
+              fontSize: control.props?.textFormatting?.fontSize || 16,
             }}
           >
             {control.props.label}

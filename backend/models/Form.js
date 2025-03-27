@@ -11,6 +11,12 @@ const ControlSchema = new mongoose.Schema({
     placeholder: { type: String, default: '' }, // Placeholder text for input fields
     format: { type: String, enum: ['comma', 'dot', 'german', 'us', 'british'], default: 'dot' }, // Format for specific controls
     currency: { type: String, enum: ['EUR', 'USD', 'GBP'], default: 'USD' }, // Currency type for CurrencyInputField
+    textFormatting: {
+      bold: { type: Boolean, default: false },
+      italic: { type: Boolean, default: false },
+      underline: { type: Boolean, default: false },
+      fontSize: { type: Number, default: 16 } // Font size in pixels
+    },
     options: [
       {
         value: { type: String, required: true }, // Dropdown option value

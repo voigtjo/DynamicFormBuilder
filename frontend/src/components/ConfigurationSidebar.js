@@ -26,7 +26,14 @@ import {
   FormControl,
   Select,
   MenuItem,
+  ToggleButton,
+  ToggleButtonGroup,
+  Slider,
 } from '@mui/material';
+import FormatBoldIcon from '@mui/icons-material/FormatBold';
+import FormatItalicIcon from '@mui/icons-material/FormatItalic';
+import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
+import FormatSizeIcon from '@mui/icons-material/FormatSize';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloseIcon from '@mui/icons-material/Close';
@@ -642,6 +649,74 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
               variant="outlined"
               sx={{ mt: 2 }}
             />
+            
+            {/* Text Formatting Options */}
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>Text Formatting:</Typography>
+              
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <ToggleButtonGroup
+                  value={[
+                    controlToConfig?.props?.textFormatting?.bold && 'bold',
+                    controlToConfig?.props?.textFormatting?.italic && 'italic',
+                    controlToConfig?.props?.textFormatting?.underline && 'underline',
+                  ].filter(Boolean)}
+                  onChange={(event, newFormats) => {
+                    updateControl({
+                      ...controlToConfig,
+                      props: {
+                        ...controlToConfig.props,
+                        textFormatting: {
+                          ...(controlToConfig?.props?.textFormatting || {}),
+                          bold: newFormats.includes('bold'),
+                          italic: newFormats.includes('italic'),
+                          underline: newFormats.includes('underline'),
+                        }
+                      }
+                    });
+                  }}
+                  aria-label="text formatting"
+                  size="small"
+                >
+                  <ToggleButton value="bold" aria-label="bold">
+                    <FormatBoldIcon />
+                  </ToggleButton>
+                  <ToggleButton value="italic" aria-label="italic">
+                    <FormatItalicIcon />
+                  </ToggleButton>
+                  <ToggleButton value="underline" aria-label="underline">
+                    <FormatUnderlinedIcon />
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </Box>
+              
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <FormatSizeIcon />
+                <Typography variant="body2" sx={{ minWidth: '80px' }}>
+                  Font Size: {controlToConfig?.props?.textFormatting?.fontSize || 16}px
+                </Typography>
+                <Slider
+                  value={controlToConfig?.props?.textFormatting?.fontSize || 16}
+                  onChange={(e, newValue) => {
+                    updateControl({
+                      ...controlToConfig,
+                      props: {
+                        ...controlToConfig.props,
+                        textFormatting: {
+                          ...(controlToConfig?.props?.textFormatting || {}),
+                          fontSize: newValue
+                        }
+                      }
+                    });
+                  }}
+                  min={8}
+                  max={32}
+                  step={1}
+                  valueLabelDisplay="auto"
+                  sx={{ flexGrow: 1 }}
+                />
+              </Box>
+            </Box>
           </Box>
         );
     }

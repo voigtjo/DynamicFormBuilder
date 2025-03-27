@@ -32,26 +32,33 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
     // Generate a unique name based on the control type and timestamp
     const uniqueName = `${control.type.toLowerCase()}_${Date.now()}`;
     
+    // Create a clean copy of the control object without circular references
+    const cleanControl = {
+      type: control.type,
+      label: control.label,
+      props: control.props || { label: control.label || 'New Control' }
+    };
+    
     // Ensure control has props
-    if (!control.props) {
+    if (!cleanControl.props) {
       console.error('Control props is null or undefined');
-      control.props = { label: control.label || 'New Control' };
+      cleanControl.props = { label: cleanControl.label || 'New Control' };
     }
     
-    const newControl = control.type === 'MarkdownControl' 
+    const newControl = cleanControl.type === 'MarkdownControl' 
       ? {
-          type: control.type,
+          type: cleanControl.type,
           name: uniqueName,
-          props: { label: control.props.label || control.label || 'Markdown' },
+          props: { label: cleanControl.props.label || cleanControl.label || 'Markdown' },
           value: undefined,
         }
       : {
-          type: control.type,
+          type: cleanControl.type,
           name: uniqueName,
           isBusinessKey: false, // Default to false
           isHeaderColumn: false, // Default to false
-          props: { label: control.props.label || control.label || 'Control' },
-          value: control.type === 'TextInputControl' ? '' : undefined,
+          props: { label: cleanControl.props.label || cleanControl.label || 'Control' },
+          value: cleanControl.type === 'TextInputControl' ? '' : undefined,
         };
     
     console.log('Created newControl with type:', newControl.type);
@@ -173,7 +180,17 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
               width: '100%',
             }}
           >
-            <Typography variant="body1">{control.props.label}</Typography>
+            <Typography 
+              variant="body1"
+              sx={{
+                fontWeight: control.props?.textFormatting?.bold ? 'bold' : 'normal',
+                fontStyle: control.props?.textFormatting?.italic ? 'italic' : 'normal',
+                textDecoration: control.props?.textFormatting?.underline ? 'underline' : 'none',
+                fontSize: control.props?.textFormatting?.fontSize || 16,
+              }}
+            >
+              {control.props.label}
+            </Typography>
           </Box>
         );
       case 'TextInputControl':
