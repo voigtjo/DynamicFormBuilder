@@ -99,6 +99,11 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
     if (!control) {
       return <Typography>No control assigned</Typography>;
     }
+    
+    // Ensure control.props exists to prevent "Cannot read properties of undefined" errors
+    if (!control.props) {
+      control.props = { label: control.label || 'Unnamed Control' };
+    }
 
     switch (control.type) {
       case 'ImageControl':
@@ -305,7 +310,10 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
                   sx={{ mt: 1, alignSelf: 'center' }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    assignControl({ type: 'LabelControl', label: 'New Label' });
+                    assignControl({ 
+                      type: 'LabelControl', 
+                      props: { label: 'New Label' }
+                    });
                   }}
                 >
                   Add Control
@@ -323,7 +331,10 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
                   sx={{ mt: 1, alignSelf: 'center' }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    assignControl({ type: 'LabelControl', label: 'New Label' });
+                    assignControl({ 
+                      type: 'LabelControl', 
+                      props: { label: 'New Label' }
+                    });
                   }}
                 >
                   Add Control
