@@ -31,7 +31,7 @@ const Row = ({
 
   const rowStyle = {
     border: getBorderStyle(),
-    backgroundColor: isHighlighted ? '#E3F2FD' : '#fefefe',
+    backgroundColor: isHighlighted ? '#E3F2FD' : (row.backgroundColor || '#fefefe'),
     borderRadius: '8px',
     padding: 0.5,
     marginBottom: 0,

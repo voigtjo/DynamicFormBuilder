@@ -118,6 +118,8 @@ const TestFormRenderer = ({ form, formData, onFormDataChange }) => {
               fontStyle: control.props?.textFormatting?.italic ? 'italic' : 'normal',
               textDecoration: control.props?.textFormatting?.underline ? 'underline' : 'none',
               fontSize: control.props?.textFormatting?.fontSize || 16,
+              backgroundColor: control.props?.textFormatting?.backgroundColor || 'transparent',
+              padding: control.props?.textFormatting?.backgroundColor ? '0 4px' : 0,
             }}
           >
             {control.props.label}
@@ -250,7 +252,8 @@ const TestFormRenderer = ({ form, formData, onFormDataChange }) => {
               `${row.frame.thickness === 'thick' ? '3px' : '1px'} ${row.frame.style} #333` : 
               'none',
             borderRadius: '8px',
-            padding: row.frame && row.frame.enabled ? 1 : 0
+            padding: row.frame && row.frame.enabled ? 1 : 0,
+            backgroundColor: row.backgroundColor || 'transparent'
           }}
         >
           <Grid container spacing={2} sx={{ width: '100%' }}>
@@ -289,7 +292,9 @@ const TestFormRenderer = ({ form, formData, onFormDataChange }) => {
                       ? 'flex-start'
                       : webpart.horizontalAlign === 'right'
                         ? 'flex-end'
-                        : 'center'
+                        : 'center',
+                    backgroundColor: webpart.backgroundColor || 'transparent',
+                    borderRadius: webpart.backgroundColor ? '4px' : 0
                   }}>
                     {renderControl(webpart)}
                   </Box>

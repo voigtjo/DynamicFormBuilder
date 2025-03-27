@@ -29,11 +29,13 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Slider,
+  InputLabel,
 } from '@mui/material';
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
 import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
 import FormatSizeIcon from '@mui/icons-material/FormatSize';
+import FormatColorFillIcon from '@mui/icons-material/FormatColorFill';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloseIcon from '@mui/icons-material/Close';
@@ -716,6 +718,57 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
                   sx={{ flexGrow: 1 }}
                 />
               </Box>
+              
+              {/* Text Background Color */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
+                <FormatColorFillIcon />
+                <Typography variant="body2" sx={{ minWidth: '80px' }}>
+                  Text Background:
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexGrow: 1 }}>
+                  <Box
+                    sx={{
+                      width: '24px',
+                      height: '24px',
+                      border: '1px solid #ccc',
+                      backgroundColor: controlToConfig?.props?.textFormatting?.backgroundColor || 'transparent',
+                    }}
+                  />
+                  <input
+                    type="color"
+                    value={controlToConfig?.props?.textFormatting?.backgroundColor || '#ffffff'}
+                    onChange={(e) => {
+                      updateControl({
+                        ...controlToConfig,
+                        props: {
+                          ...controlToConfig.props,
+                          textFormatting: {
+                            ...(controlToConfig?.props?.textFormatting || {}),
+                            backgroundColor: e.target.value
+                          }
+                        }
+                      });
+                    }}
+                  />
+                  <Button 
+                    size="small" 
+                    onClick={() => {
+                      updateControl({
+                        ...controlToConfig,
+                        props: {
+                          ...controlToConfig.props,
+                          textFormatting: {
+                            ...(controlToConfig?.props?.textFormatting || {}),
+                            backgroundColor: ''
+                          }
+                        }
+                      });
+                    }}
+                  >
+                    Clear
+                  </Button>
+                </Box>
+              </Box>
             </Box>
           </Box>
         );
@@ -840,6 +893,42 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
             <MenuItem value="right">Right</MenuItem>
           </Select>
         </FormControl>
+      </Box>
+      
+      {/* Webpart Background Color */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, mt: 1 }}>
+        <Typography variant="subtitle2">Webpart Background:</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box
+            sx={{
+              width: '24px',
+              height: '24px',
+              border: '1px solid #ccc',
+              backgroundColor: selectedWebpart?.backgroundColor || 'transparent',
+            }}
+          />
+          <input
+            type="color"
+            value={selectedWebpart?.backgroundColor || '#ffffff'}
+            onChange={(e) => {
+              updateWebpart({
+                ...selectedWebpart,
+                backgroundColor: e.target.value
+              });
+            }}
+          />
+          <Button 
+            size="small" 
+            onClick={() => {
+              updateWebpart({
+                ...selectedWebpart,
+                backgroundColor: ''
+              });
+            }}
+          >
+            Clear
+          </Button>
+        </Box>
       </Box>
       
       {/* Stacked Mode Toggle */}

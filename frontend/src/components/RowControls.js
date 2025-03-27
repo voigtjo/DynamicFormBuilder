@@ -150,6 +150,43 @@ const RowControls = ({
             />
           </Box>
           
+          {/* Row Background Color */}
+          <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 2 }}>
+            <Typography variant="body2" sx={{ mr: 1 }}>Background:</Typography>
+            <Box
+              sx={{
+                width: '20px',
+                height: '20px',
+                border: '1px solid #ccc',
+                backgroundColor: selectedRow?.backgroundColor || 'transparent',
+                mr: 1
+              }}
+            />
+            <input
+              type="color"
+              value={selectedRow?.backgroundColor || '#ffffff'}
+              onChange={(e) => {
+                updateRow({
+                  ...selectedRow,
+                  backgroundColor: e.target.value
+                });
+              }}
+              style={{ marginRight: '4px' }}
+            />
+            <Button 
+              size="small" 
+              variant="outlined"
+              onClick={() => {
+                updateRow({
+                  ...selectedRow,
+                  backgroundColor: ''
+                });
+              }}
+            >
+              Clear
+            </Button>
+          </Box>
+          
         </>
       )}
     </Box>

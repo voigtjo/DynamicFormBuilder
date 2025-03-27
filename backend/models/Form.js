@@ -15,7 +15,8 @@ const ControlSchema = new mongoose.Schema({
       bold: { type: Boolean, default: false },
       italic: { type: Boolean, default: false },
       underline: { type: Boolean, default: false },
-      fontSize: { type: Number, default: 16 } // Font size in pixels
+      fontSize: { type: Number, default: 16 }, // Font size in pixels
+      backgroundColor: { type: String, default: '' } // Text background color
     },
     options: [
       {
@@ -47,6 +48,7 @@ const WebpartSchema = new mongoose.Schema({
   isStacked: { type: Boolean, default: false }, // Flag to indicate if controls are stacked
   verticalAlign: { type: String, enum: ['top', 'center', 'bottom'], default: 'center' }, // Vertical alignment of webpart content
   horizontalAlign: { type: String, enum: ['left', 'center', 'right'], default: 'left' }, // Horizontal alignment of webpart content
+  backgroundColor: { type: String, default: '' }, // Background color for the webpart
 });
 
 // Define the Row schema
@@ -59,6 +61,7 @@ const RowSchema = new mongoose.Schema({
   isCompact: { type: Boolean, default: false }, // Compact mode for reduced padding
   distribution: { type: String, default: '' }, // Distribution string (e.g., "2:1")
   distributionPercentages: [{ type: Number }], // Calculated percentages for each webpart
+  backgroundColor: { type: String, default: '' }, // Background color for the row
   frame: {
     enabled: { type: Boolean, default: false },
     style: { type: String, enum: ['solid', 'dotted'], default: 'solid' },

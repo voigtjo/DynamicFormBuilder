@@ -187,6 +187,8 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
                 fontStyle: control.props?.textFormatting?.italic ? 'italic' : 'normal',
                 textDecoration: control.props?.textFormatting?.underline ? 'underline' : 'none',
                 fontSize: control.props?.textFormatting?.fontSize || 16,
+                backgroundColor: control.props?.textFormatting?.backgroundColor || 'transparent',
+                padding: control.props?.textFormatting?.backgroundColor ? '0 4px' : 0,
               }}
             >
               {control.props.label}
@@ -553,6 +555,7 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
             : 'center',
         overflow: 'auto',
         boxSizing: 'border-box',
+        backgroundColor: webpart.backgroundColor || 'transparent',
       }}
     >
       {renderControl()}
