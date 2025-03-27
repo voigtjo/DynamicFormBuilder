@@ -120,11 +120,11 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
       case 'ImageControl':
         return (
           <Box sx={{ width: '100%', textAlign: 'center' }}>
-            {webpart.control.props.imageData ? (
+            {control.props.imageData ? (
               <Box 
                 component="img" 
-                src={webpart.control.props.imageData}
-                alt={webpart.control.props.label || "Image"}
+                src={control.props.imageData}
+                alt={control.props.label || "Image"}
                 sx={{ 
                   maxWidth: '100%', 
                   maxHeight: '100%',
@@ -147,7 +147,7 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
               >
                 <ImageIcon sx={{ fontSize: 40, color: '#aaa', mb: 1 }} />
                 <Typography variant="body2" color="textSecondary">
-                  {webpart.control.props.label || "Image placeholder"}
+                  {control.props.label || "Image placeholder"}
                 </Typography>
               </Box>
             )}
@@ -158,7 +158,7 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
         return (
           <Box
             dangerouslySetInnerHTML={{
-              __html: marked(webpart.control.props.markdownContent || ''),
+              __html: marked(control.props.markdownContent || ''),
             }}
             sx={{ width: '100%' }}
           />
@@ -174,23 +174,39 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
               width: '100%',
             }}
           >
-            <Typography variant="body1">{webpart.control.props.label}</Typography>
+            <Typography variant="body1">{control.props.label}</Typography>
           </Box>
         );
       case 'TextInputControl':
         return (
           <TextField
-            label={webpart.control.props.label || 'Text Input'}
-            value={webpart.control.value || ''}
-            onChange={(e) =>
-              updateWebpart({
-                ...webpart,
-                control: {
-                  ...webpart.control,
-                  value: e.target.value,
-                },
-              })
-            }
+            label={control.props.label || 'Text Input'}
+            value={control.value || ''}
+            onChange={(e) => {
+              // For stacked controls, we need to update the specific control in the array
+              if (webpart.isStacked) {
+                const updatedControls = [...webpart.controls];
+                const controlIndex = updatedControls.findIndex(c => c.name === control.name);
+                if (controlIndex !== -1) {
+                  updatedControls[controlIndex] = {
+                    ...control,
+                    value: e.target.value
+                  };
+                  updateWebpart({
+                    ...webpart,
+                    controls: updatedControls
+                  });
+                }
+              } else {
+                updateWebpart({
+                  ...webpart,
+                  control: {
+                    ...control,
+                    value: e.target.value,
+                  },
+                });
+              }
+            }}
             fullWidth
             variant="outlined"
           />
@@ -200,17 +216,32 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
         return (
           <TextField
             type="number"
-            label={webpart.control.props.label || 'Number Input'}
-            value={webpart.control.value || ''}
-            onChange={(e) =>
-              updateWebpart({
-                ...webpart,
-                control: {
-                  ...webpart.control,
-                  value: e.target.value,
-                },
-              })
-            }
+            label={control.props.label || 'Number Input'}
+            value={control.value || ''}
+            onChange={(e) => {
+              if (webpart.isStacked) {
+                const updatedControls = [...webpart.controls];
+                const controlIndex = updatedControls.findIndex(c => c.name === control.name);
+                if (controlIndex !== -1) {
+                  updatedControls[controlIndex] = {
+                    ...control,
+                    value: e.target.value
+                  };
+                  updateWebpart({
+                    ...webpart,
+                    controls: updatedControls
+                  });
+                }
+              } else {
+                updateWebpart({
+                  ...webpart,
+                  control: {
+                    ...control,
+                    value: e.target.value,
+                  },
+                });
+              }
+            }}
             fullWidth
             variant="outlined"
           />
@@ -218,17 +249,32 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
       case 'CurrencyInputField':
         return (
           <TextField
-            label={webpart.control.props.label || 'Currency Input'}
-            value={webpart.control.value || ''}
-            onChange={(e) =>
-              updateWebpart({
-                ...webpart,
-                control: {
-                  ...webpart.control,
-                  value: e.target.value,
-                },
-              })
-            }
+            label={control.props.label || 'Currency Input'}
+            value={control.value || ''}
+            onChange={(e) => {
+              if (webpart.isStacked) {
+                const updatedControls = [...webpart.controls];
+                const controlIndex = updatedControls.findIndex(c => c.name === control.name);
+                if (controlIndex !== -1) {
+                  updatedControls[controlIndex] = {
+                    ...control,
+                    value: e.target.value
+                  };
+                  updateWebpart({
+                    ...webpart,
+                    controls: updatedControls
+                  });
+                }
+              } else {
+                updateWebpart({
+                  ...webpart,
+                  control: {
+                    ...control,
+                    value: e.target.value,
+                  },
+                });
+              }
+            }}
             fullWidth
             variant="outlined"
           />
@@ -237,35 +283,65 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
         return (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
             <Checkbox
-              checked={webpart.control.value || false}
-              onChange={(e) =>
-                updateWebpart({
-                  ...webpart,
-                  control: {
-                    ...webpart.control,
-                    value: e.target.checked,
-                  },
-                })
-              }
+              checked={control.value || false}
+              onChange={(e) => {
+                if (webpart.isStacked) {
+                  const updatedControls = [...webpart.controls];
+                  const controlIndex = updatedControls.findIndex(c => c.name === control.name);
+                  if (controlIndex !== -1) {
+                    updatedControls[controlIndex] = {
+                      ...control,
+                      value: e.target.checked
+                    };
+                    updateWebpart({
+                      ...webpart,
+                      controls: updatedControls
+                    });
+                  }
+                } else {
+                  updateWebpart({
+                    ...webpart,
+                    control: {
+                      ...control,
+                      value: e.target.checked,
+                    },
+                  });
+                }
+              }}
             />
-            <Typography>{webpart.control.props.label || 'Checkbox'}</Typography>
+            <Typography>{control.props.label || 'Checkbox'}</Typography>
           </Box>
         );
       case 'Dateselector':
         return (
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
-              label={webpart.control.props.label || 'Select Date'}
-              value={webpart.control.value || null}
-              onChange={(date) =>
-                updateWebpart({
-                  ...webpart,
-                  control: {
-                    ...webpart.control,
-                    value: date,
-                  },
-                })
-              }
+              label={control.props.label || 'Select Date'}
+              value={control.value || null}
+              onChange={(date) => {
+                if (webpart.isStacked) {
+                  const updatedControls = [...webpart.controls];
+                  const controlIndex = updatedControls.findIndex(c => c.name === control.name);
+                  if (controlIndex !== -1) {
+                    updatedControls[controlIndex] = {
+                      ...control,
+                      value: date
+                    };
+                    updateWebpart({
+                      ...webpart,
+                      controls: updatedControls
+                    });
+                  }
+                } else {
+                  updateWebpart({
+                    ...webpart,
+                    control: {
+                      ...control,
+                      value: date,
+                    },
+                  });
+                }
+              }}
               renderInput={(params) => <TextField {...params} fullWidth />}
             />
           </LocalizationProvider>
@@ -273,21 +349,36 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
       case 'DropDownField':
         return (
           <FormControl fullWidth variant="outlined">
-            <InputLabel>{webpart.control.props.label || 'Select'}</InputLabel>
+            <InputLabel>{control.props.label || 'Select'}</InputLabel>
             <Select
-              value={webpart.control.value || ''}
-              onChange={(e) =>
-                updateWebpart({
-                  ...webpart,
-                  control: {
-                    ...webpart.control,
-                    value: e.target.value,
-                  },
-                })
-              }
-              label={webpart.control.props.label || 'Select'}
+              value={control.value || ''}
+              onChange={(e) => {
+                if (webpart.isStacked) {
+                  const updatedControls = [...webpart.controls];
+                  const controlIndex = updatedControls.findIndex(c => c.name === control.name);
+                  if (controlIndex !== -1) {
+                    updatedControls[controlIndex] = {
+                      ...control,
+                      value: e.target.value
+                    };
+                    updateWebpart({
+                      ...webpart,
+                      controls: updatedControls
+                    });
+                  }
+                } else {
+                  updateWebpart({
+                    ...webpart,
+                    control: {
+                      ...control,
+                      value: e.target.value,
+                    },
+                  });
+                }
+              }}
+              label={control.props.label || 'Select'}
             >
-              {webpart.control.props.options?.map((option, index) => (
+              {control.props.options?.map((option, index) => (
                 <MenuItem key={index} value={option.value} style={{ color: option.color || 'inherit' }}>
                   {option.value || `Option ${index + 1}`}
                 </MenuItem>
