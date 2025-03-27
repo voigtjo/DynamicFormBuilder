@@ -39,7 +39,8 @@ const WebpartSchema = new mongoose.Schema({
   control: { type: ControlSchema, default: null }, // Store assigned control and its configuration (legacy support)
   controls: [ControlSchema], // Array of controls for stacked layout
   isStacked: { type: Boolean, default: false }, // Flag to indicate if controls are stacked
-  verticalAlign: { type: String, enum: ['top', 'center'], default: 'center' }, // Vertical alignment of webpart content
+  verticalAlign: { type: String, enum: ['top', 'center', 'bottom'], default: 'center' }, // Vertical alignment of webpart content
+  horizontalAlign: { type: String, enum: ['left', 'center', 'right'], default: 'left' }, // Horizontal alignment of webpart content
 });
 
 // Define the Row schema

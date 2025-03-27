@@ -727,19 +727,93 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
       {/* Vertical Alignment */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, mt: 1 }}>
         <Typography variant="subtitle2">Vertical Alignment:</Typography>
-        <Button 
-          variant={selectedWebpart?.verticalAlign === 'top' ? "contained" : "outlined"} 
-          color={selectedWebpart?.verticalAlign === 'top' ? "primary" : "inherit"}
-          size="small"
-          onClick={() => {
-            updateWebpart({
-              ...selectedWebpart,
-              verticalAlign: selectedWebpart?.verticalAlign === 'top' ? 'center' : 'top'
-            });
-          }}
-        >
-          {selectedWebpart?.verticalAlign === 'top' ? "Top" : "Center"}
-        </Button>
+        <Box sx={{ display: 'flex', gap: 0.5 }}>
+          <Button 
+            variant={selectedWebpart?.verticalAlign === 'top' ? "contained" : "outlined"} 
+            color={selectedWebpart?.verticalAlign === 'top' ? "primary" : "inherit"}
+            size="small"
+            onClick={() => {
+              updateWebpart({
+                ...selectedWebpart,
+                verticalAlign: 'top'
+              });
+            }}
+          >
+            Top
+          </Button>
+          <Button 
+            variant={selectedWebpart?.verticalAlign === 'center' ? "contained" : "outlined"} 
+            color={selectedWebpart?.verticalAlign === 'center' ? "primary" : "inherit"}
+            size="small"
+            onClick={() => {
+              updateWebpart({
+                ...selectedWebpart,
+                verticalAlign: 'center'
+              });
+            }}
+          >
+            Center
+          </Button>
+          <Button 
+            variant={selectedWebpart?.verticalAlign === 'bottom' ? "contained" : "outlined"} 
+            color={selectedWebpart?.verticalAlign === 'bottom' ? "primary" : "inherit"}
+            size="small"
+            onClick={() => {
+              updateWebpart({
+                ...selectedWebpart,
+                verticalAlign: 'bottom'
+              });
+            }}
+          >
+            Bottom
+          </Button>
+        </Box>
+      </Box>
+      
+      {/* Horizontal Alignment */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, mt: 1 }}>
+        <Typography variant="subtitle2">Horizontal Alignment:</Typography>
+        <Box sx={{ display: 'flex', gap: 0.5 }}>
+          <Button 
+            variant={selectedWebpart?.horizontalAlign === 'left' ? "contained" : "outlined"} 
+            color={selectedWebpart?.horizontalAlign === 'left' ? "primary" : "inherit"}
+            size="small"
+            onClick={() => {
+              updateWebpart({
+                ...selectedWebpart,
+                horizontalAlign: 'left'
+              });
+            }}
+          >
+            Left
+          </Button>
+          <Button 
+            variant={selectedWebpart?.horizontalAlign === 'center' ? "contained" : "outlined"} 
+            color={selectedWebpart?.horizontalAlign === 'center' ? "primary" : "inherit"}
+            size="small"
+            onClick={() => {
+              updateWebpart({
+                ...selectedWebpart,
+                horizontalAlign: 'center'
+              });
+            }}
+          >
+            Center
+          </Button>
+          <Button 
+            variant={selectedWebpart?.horizontalAlign === 'right' ? "contained" : "outlined"} 
+            color={selectedWebpart?.horizontalAlign === 'right' ? "primary" : "inherit"}
+            size="small"
+            onClick={() => {
+              updateWebpart({
+                ...selectedWebpart,
+                horizontalAlign: 'right'
+              });
+            }}
+          >
+            Right
+          </Button>
+        </Box>
       </Box>
       
       {/* Stacked Mode Toggle */}
