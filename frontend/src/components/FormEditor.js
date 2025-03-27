@@ -44,10 +44,8 @@
           rowId: `row-${Date.now()}`, 
           webparts: [], 
           height: 100,
-          verticalSpacing: 1,
           distribution: '',
           distributionPercentages: [],
-          isCompact: false,
           frame: {
             enabled: false,
             style: 'solid',
@@ -114,10 +112,8 @@
         rowId: `row-${Date.now()}`, 
         webparts: [], 
         height: 100,
-        verticalSpacing: 1,
         distribution: '',
         distributionPercentages: [],
-        isCompact: false,
         frame: {
           enabled: false,
           style: 'solid',
