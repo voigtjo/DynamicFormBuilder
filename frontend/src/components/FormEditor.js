@@ -15,6 +15,7 @@
           rows: layout.rows.map(row => ({
             ...row,
             webparts: row.webparts.map(webpart => {
+              // Handle single control
               if (webpart.control && !webpart.control.name) {
                 return {
                   ...webpart,
@@ -24,6 +25,23 @@
                   }
                 };
               }
+              
+              // Handle stacked controls
+              if (webpart.isStacked && webpart.controls) {
+                return {
+                  ...webpart,
+                  controls: webpart.controls.map(control => {
+                    if (!control.name) {
+                      return {
+                        ...control,
+                        name: `${control.type.toLowerCase()}_${Date.now()}`
+                      };
+                    }
+                    return control;
+                  })
+                };
+              }
+              
               return webpart;
             })
           }))

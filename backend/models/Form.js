@@ -36,7 +36,9 @@ const WebpartSchema = new mongoose.Schema({
   label: { type: String },
   elements: { type: Array, default: [] },
   width: { type: Number, default: 1 }, // Width for fixed webpart layout
-  control: { type: ControlSchema, default: null }, // Store assigned control and its configuration
+  control: { type: ControlSchema, default: null }, // Store assigned control and its configuration (legacy support)
+  controls: [ControlSchema], // Array of controls for stacked layout
+  isStacked: { type: Boolean, default: false }, // Flag to indicate if controls are stacked
 });
 
 // Define the Row schema

@@ -9,7 +9,11 @@ import {
   Select,
   FormControl,
   InputLabel,
+  Button,
+  Divider,
+  IconButton,
 } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import ImageIcon from '@mui/icons-material/Image';
 import { marked } from 'marked'; // Use marked for Markdown rendering
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -26,28 +30,41 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
     // Generate a unique name based on the control type and timestamp
     const uniqueName = `${control.type.toLowerCase()}_${Date.now()}`;
     
-    // For Markdown controls, don't include businessKey or headerColumn properties
-    if (control.type === 'MarkdownControl') {
-      updateWebpart({
-        ...webpart,
-        control: {
+    const newControl = control.type === 'MarkdownControl' 
+      ? {
           type: control.type,
           name: uniqueName,
           props: { label: control.label },
           value: undefined,
-        },
-      });
-    } else {
-      updateWebpart({
-        ...webpart,
-        control: {
+        }
+      : {
           type: control.type,
           name: uniqueName,
           isBusinessKey: false, // Default to false
           isHeaderColumn: false, // Default to false
           props: { label: control.label },
           value: control.type === 'TextInputControl' ? '' : undefined,
-        },
+        };
+    
+    // If webpart is already in stacked mode, add to controls array
+    if (webpart.isStacked) {
+      updateWebpart({
+        ...webpart,
+        controls: [...(webpart.controls || []), newControl],
+      });
+    } else if (webpart.control) {
+      // If there's already a control, convert to stacked mode
+      updateWebpart({
+        ...webpart,
+        isStacked: true,
+        controls: [webpart.control, newControl],
+        control: null, // Remove the single control
+      });
+    } else {
+      // If no control yet, just set it as the single control
+      updateWebpart({
+        ...webpart,
+        control: newControl,
       });
     }
   };
@@ -56,12 +73,34 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
     selectWebpart(webpart.id);
   };
 
-  const renderControl = () => {
-    if (!webpart.control) {
+  const addStackedControl = () => {
+    // Convert to stacked mode if not already
+    if (!webpart.isStacked) {
+      if (webpart.control) {
+        // Convert single control to stacked
+        updateWebpart({
+          ...webpart,
+          isStacked: true,
+          controls: [webpart.control],
+          control: null,
+        });
+      } else {
+        // Just enable stacked mode
+        updateWebpart({
+          ...webpart,
+          isStacked: true,
+          controls: [],
+        });
+      }
+    }
+  };
+
+  const renderSingleControl = (control) => {
+    if (!control) {
       return <Typography>No control assigned</Typography>;
     }
 
-    switch (webpart.control.type) {
+    switch (control.type) {
       case 'ImageControl':
         return (
           <Box sx={{ width: '100%', textAlign: 'center' }}>
@@ -245,6 +284,61 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
     }
   };
 
+  const renderControl = () => {
+    // If in stacked mode, render all controls
+    if (webpart.isStacked) {
+      return (
+        <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          {webpart.controls && webpart.controls.length > 0 ? (
+            <>
+              {webpart.controls.map((control, index) => (
+                <Box key={control.name || index} sx={{ mb: index < webpart.controls.length - 1 ? 1 : 0 }}>
+                  {renderSingleControl(control)}
+                  {index < webpart.controls.length - 1 && <Divider sx={{ my: 0.5 }} />}
+                </Box>
+              ))}
+              {isSelected && (
+                <Button 
+                  startIcon={<AddIcon />} 
+                  size="small" 
+                  variant="outlined" 
+                  sx={{ mt: 1, alignSelf: 'center' }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    assignControl({ type: 'LabelControl', label: 'New Label' });
+                  }}
+                >
+                  Add Control
+                </Button>
+              )}
+            </>
+          ) : (
+            <>
+              <Typography>No controls assigned</Typography>
+              {isSelected && (
+                <Button 
+                  startIcon={<AddIcon />} 
+                  size="small" 
+                  variant="outlined" 
+                  sx={{ mt: 1, alignSelf: 'center' }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    assignControl({ type: 'LabelControl', label: 'New Label' });
+                  }}
+                >
+                  Add Control
+                </Button>
+              )}
+            </>
+          )}
+        </Box>
+      );
+    } else {
+      // Regular single control mode
+      return renderSingleControl(webpart.control);
+    }
+  };
+
   return (
     <Box
       ref={drop}
@@ -263,6 +357,18 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
       }}
     >
       {renderControl()}
+      {isSelected && !webpart.isStacked && !webpart.control && (
+        <Button 
+          variant="outlined" 
+          size="small" 
+          onClick={(e) => {
+            e.stopPropagation();
+            addStackedControl();
+          }}
+        >
+          Enable Stacked Mode
+        </Button>
+      )}
     </Box>
   );
 };

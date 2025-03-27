@@ -16,7 +16,15 @@ import {
   Tooltip,
   Checkbox,
   Alert,
+  Tabs,
+  Tab,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloseIcon from '@mui/icons-material/Close';
 import { ChromePicker } from 'react-color';
@@ -26,10 +34,22 @@ import OpenInFullIcon from '@mui/icons-material/OpenInFull'; // Import the enlar
 const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
   const [openColorPickerIndex, setOpenColorPickerIndex] = useState(null);
   const [isMarkdownDialogOpen, setMarkdownDialogOpen] = useState(false);
+  const [selectedControlIndex, setSelectedControlIndex] = useState(0);
 
   if (!selectedWebpart) {
     return <Typography>Select a webpart to configure</Typography>;
   }
+
+  // Determine if we're in stacked mode
+  const isStacked = selectedWebpart.isStacked;
+  
+  // Get the controls array or create one from the single control
+  const controls = isStacked 
+    ? selectedWebpart.controls || []
+    : selectedWebpart.control ? [selectedWebpart.control] : [];
+  
+  // Get the currently selected control
+  const selectedControl = controls[selectedControlIndex] || null;
   
   const handleNameChange = (e) => {
     updateWebpart({
@@ -239,6 +259,80 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
   };
 
   const renderConfigurationFields = () => {
+    // Get the control to configure (either the selected control in stacked mode or the single control)
+    const controlToConfig = isStacked ? selectedControl : selectedWebpart.control;
+    if (!controlToConfig) return null;
+    
+    // Update the control in the appropriate place
+    const updateControl = (updatedControl) => {
+      if (isStacked) {
+        const newControls = [...controls];
+        newControls[selectedControlIndex] = updatedControl;
+        updateWebpart({
+          ...selectedWebpart,
+          controls: newControls
+        });
+      } else {
+        updateWebpart({
+          ...selectedWebpart,
+          control: updatedControl
+        });
+      }
+    };
+    
+    // Handler functions for the control being configured
+    const handleNameChange = (e) => {
+      updateControl({
+        ...controlToConfig,
+        name: e.target.value,
+      });
+    };
+    
+    const handleBusinessKeyChange = (e) => {
+      updateControl({
+        ...controlToConfig,
+        isBusinessKey: e.target.checked,
+      });
+    };
+    
+    const handleHeaderColumnChange = (e) => {
+      updateControl({
+        ...controlToConfig,
+        isHeaderColumn: e.target.checked,
+      });
+    };
+    
+    const handleLabelChange = (e) => {
+      updateControl({
+        ...controlToConfig,
+        props: {
+          ...controlToConfig.props,
+          label: e.target.value,
+        },
+      });
+    };
+    
+    const generateNameFromLabel = () => {
+      if (!controlToConfig.props?.label) {
+        alert('Please enter a label first');
+        return;
+      }
+      
+      // Generate a name based on the label
+      const generatedName = controlToConfig.props.label
+        .toLowerCase()
+        .replace(/\s+/g, '_')
+        .replace(/[^a-z0-9_]/g, '')
+        .substring(0, 30);
+      
+      const uniqueName = `${generatedName}_${Date.now().toString().substring(8)}`;
+      
+      updateControl({
+        ...controlToConfig,
+        name: uniqueName,
+      });
+    };
+    
     // Common fields for all control types
     const commonFields = (
       <Box sx={{ marginBottom: 2 }}>
@@ -249,7 +343,7 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
           <TextField
             fullWidth
             size="small"
-            value={selectedWebpart.control?.name || ''}
+            value={controlToConfig.name || ''}
             onChange={handleNameChange}
             placeholder="Enter a unique name"
             required
@@ -267,7 +361,7 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
         </Box>
         
         {/* Data properties - Hide for Markdown controls */}
-        {selectedWebpart.control?.type !== 'MarkdownControl' && (
+        {controlToConfig.type !== 'MarkdownControl' && (
           <Box sx={{ mt: 2 }}>
             <Typography variant="subtitle2" sx={{ fontSize: '0.9rem', marginBottom: 1 }}>
               Data Properties:
@@ -276,7 +370,7 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Checkbox
-                  checked={selectedWebpart.control?.isBusinessKey || false}
+                  checked={controlToConfig.isBusinessKey || false}
                   onChange={handleBusinessKeyChange}
                   size="small"
                 />
@@ -288,7 +382,7 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
               
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Checkbox
-                  checked={selectedWebpart.control?.isHeaderColumn || false}
+                  checked={controlToConfig.isHeaderColumn || false}
                   onChange={handleHeaderColumnChange}
                   size="small"
                 />
@@ -303,7 +397,7 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
       </Box>
     );
 
-    switch (selectedWebpart.control?.type) {
+    switch (controlToConfig.type) {
       case 'ImageControl':
         return (
           <Box>
@@ -520,12 +614,142 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
     }
   };
 
+  const handleDeleteControl = (index) => {
+    if (!isStacked) return;
+    
+    const newControls = [...controls];
+    newControls.splice(index, 1);
+    
+    // If we're deleting the selected control, select the previous one or the first one
+    if (index === selectedControlIndex) {
+      setSelectedControlIndex(Math.max(0, index - 1));
+    } else if (index < selectedControlIndex) {
+      // If we're deleting a control before the selected one, adjust the index
+      setSelectedControlIndex(selectedControlIndex - 1);
+    }
+    
+    // If this was the last control, disable stacked mode
+    if (newControls.length === 0) {
+      updateWebpart({
+        ...selectedWebpart,
+        isStacked: false,
+        controls: [],
+        control: null
+      });
+    } else if (newControls.length === 1 && !selectedWebpart.isStacked) {
+      // If we're down to one control and not explicitly in stacked mode, convert back to single control
+      updateWebpart({
+        ...selectedWebpart,
+        isStacked: false,
+        control: newControls[0],
+        controls: []
+      });
+    } else {
+      // Otherwise just update the controls array
+      updateWebpart({
+        ...selectedWebpart,
+        controls: newControls
+      });
+    }
+  };
+  
+  const handleToggleStackedMode = () => {
+    if (isStacked) {
+      // Convert to single control mode if possible
+      if (controls.length === 1) {
+        updateWebpart({
+          ...selectedWebpart,
+          isStacked: false,
+          control: controls[0],
+          controls: []
+        });
+      } else if (controls.length === 0) {
+        updateWebpart({
+          ...selectedWebpart,
+          isStacked: false,
+          controls: []
+        });
+      } else {
+        // Can't disable stacked mode with multiple controls
+        alert('Remove additional controls before disabling stacked mode');
+      }
+    } else {
+      // Convert to stacked mode
+      updateWebpart({
+        ...selectedWebpart,
+        isStacked: true,
+        controls: selectedWebpart.control ? [selectedWebpart.control] : [],
+        control: null
+      });
+    }
+  };
+
   return (
     <Box>
       <Typography variant="h6" sx={{ padding: 1, backgroundColor: '#f5f5f5' }}>
         Configuration
       </Typography>
-      {renderConfigurationFields()}
+      
+      {/* Stacked Mode Toggle */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, mt: 1 }}>
+        <Typography variant="subtitle2">Stacked Controls Mode:</Typography>
+        <Button 
+          variant={isStacked ? "contained" : "outlined"} 
+          color={isStacked ? "primary" : "inherit"}
+          size="small"
+          onClick={handleToggleStackedMode}
+        >
+          {isStacked ? "Enabled" : "Disabled"}
+        </Button>
+      </Box>
+      
+      {isStacked && (
+        <>
+          <Typography variant="subtitle2" sx={{ mb: 1 }}>Controls:</Typography>
+          <List dense sx={{ mb: 2, border: '1px solid #eee', borderRadius: 1 }}>
+            {controls.length > 0 ? (
+              controls.map((control, index) => (
+                <ListItem 
+                  key={control.name || index}
+                  button
+                  selected={index === selectedControlIndex}
+                  onClick={() => setSelectedControlIndex(index)}
+                  divider={index < controls.length - 1}
+                >
+                  <ListItemText 
+                    primary={control.props?.label || control.name || `Control ${index + 1}`} 
+                    secondary={control.type}
+                  />
+                  <ListItemSecondaryAction>
+                    <IconButton 
+                      edge="end" 
+                      size="small"
+                      onClick={() => handleDeleteControl(index)}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              ))
+            ) : (
+              <ListItem>
+                <ListItemText primary="No controls added yet" />
+              </ListItem>
+            )}
+          </List>
+        </>
+      )}
+      
+      <Divider sx={{ mb: 2 }} />
+      
+      {/* Configuration for the selected control */}
+      {(isStacked && selectedControl) || (!isStacked && selectedWebpart.control) ? (
+        renderConfigurationFields()
+      ) : (
+        <Typography variant="body2" color="text.secondary">
+          {isStacked ? "Select a control or add a new one to configure" : "No control assigned to this webpart"}
+        </Typography>
+      )}
     </Box>
   );
 };

@@ -24,9 +24,29 @@ const TestFormRenderer = ({ form, formData, onFormDataChange }) => {
   }
 
   const renderControl = (webpart) => {
-    if (!webpart.control) return null;
+    // Handle stacked controls
+    if (webpart.isStacked && webpart.controls && webpart.controls.length > 0) {
+      return (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, width: '100%' }}>
+          {webpart.controls.map((control, index) => (
+            <Box key={control.name || index}>
+              {renderSingleControl(control)}
+              {index < webpart.controls.length - 1 && <Divider sx={{ my: 0.5 }} />}
+            </Box>
+          ))}
+        </Box>
+      );
+    } else if (webpart.control) {
+      // Handle single control
+      return renderSingleControl(webpart.control);
+    }
+    
+    return null;
+  };
 
-    const control = webpart.control;
+  const renderSingleControl = (control) => {
+    if (!control) return null;
+
     const value = formData[control.name] || '';
     
     switch (control.type) {

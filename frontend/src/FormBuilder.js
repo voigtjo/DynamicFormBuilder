@@ -99,17 +99,39 @@ function FormBuilder() {
           isCompact: row.isCompact || false, // Ensure isCompact property exists
           frame: row.frame || { enabled: false, style: 'solid', thickness: 'thin' }, // Ensure frame property exists
           webparts: row.webparts.map(webpart => {
+            let updatedWebpart = { ...webpart };
+            
+            // Initialize stacked mode properties if not present
+            if (updatedWebpart.isStacked === undefined) {
+              updatedWebpart.isStacked = false;
+            }
+            
+            if (!updatedWebpart.controls) {
+              updatedWebpart.controls = [];
+            }
+            
             // Ensure control has a name if it exists
-            if (webpart.control && !webpart.control.name) {
-              return {
-                ...webpart,
-                control: {
-                  ...webpart.control,
-                  name: `${webpart.control.type.toLowerCase()}_${Date.now()}`
-                }
+            if (updatedWebpart.control && !updatedWebpart.control.name) {
+              updatedWebpart.control = {
+                ...updatedWebpart.control,
+                name: `${updatedWebpart.control.type.toLowerCase()}_${Date.now()}`
               };
             }
-            return webpart;
+            
+            // Ensure all controls in stacked mode have names
+            if (updatedWebpart.isStacked && updatedWebpart.controls) {
+              updatedWebpart.controls = updatedWebpart.controls.map(control => {
+                if (!control.name) {
+                  return {
+                    ...control,
+                    name: `${control.type.toLowerCase()}_${Date.now()}`
+                  };
+                }
+                return control;
+              });
+            }
+            
+            return updatedWebpart;
           })
         }));
       }
