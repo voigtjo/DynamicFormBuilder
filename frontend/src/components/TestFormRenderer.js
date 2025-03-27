@@ -46,10 +46,16 @@ const TestFormRenderer = ({ form, formData, onFormDataChange }) => {
   };
 
   const renderSingleControl = (control) => {
-    if (!control) return null;
+    console.log('renderSingleControl called with:', control ? JSON.stringify(control) : 'null');
+    
+    if (!control) {
+      console.error('Control is null in renderSingleControl');
+      return null;
+    }
 
     // Ensure control.props exists to prevent "Cannot read properties of undefined" errors
     if (!control.props) {
+      console.error('control.props is undefined for control:', JSON.stringify(control));
       control.props = { label: control.label || 'Unnamed Control' };
     }
 

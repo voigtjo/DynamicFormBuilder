@@ -615,6 +615,10 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
   };
 
   const handleDeleteControl = (index) => {
+    console.log('handleDeleteControl called with index:', index);
+    console.log('isStacked:', isStacked);
+    console.log('controls:', JSON.stringify(controls));
+    
     if (!isStacked) return;
     
     const newControls = [...controls];

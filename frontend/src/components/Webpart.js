@@ -27,14 +27,23 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
   }));
 
   const assignControl = (control) => {
+    console.log('assignControl called with:', JSON.stringify(control));
+    console.log('Current webpart state:', JSON.stringify(webpart));
+    
     // Generate a unique name based on the control type and timestamp
     const uniqueName = `${control.type.toLowerCase()}_${Date.now()}`;
+    
+    // Ensure control has props
+    if (!control.props) {
+      console.error('Control props is null or undefined:', control);
+      control.props = { label: control.label || 'New Control' };
+    }
     
     const newControl = control.type === 'MarkdownControl' 
       ? {
           type: control.type,
           name: uniqueName,
-          props: { label: control.label },
+          props: { label: control.props.label || control.label || 'Markdown' },
           value: undefined,
         }
       : {
@@ -42,9 +51,11 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
           name: uniqueName,
           isBusinessKey: false, // Default to false
           isHeaderColumn: false, // Default to false
-          props: { label: control.label },
+          props: { label: control.props.label || control.label || 'Control' },
           value: control.type === 'TextInputControl' ? '' : undefined,
         };
+    
+    console.log('Created newControl:', JSON.stringify(newControl));
     
     // If webpart is already in stacked mode, add to controls array
     if (webpart.isStacked) {
@@ -290,18 +301,25 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
   };
 
   const renderControl = () => {
+    console.log('renderControl called');
+    console.log('webpart.isStacked:', webpart.isStacked);
+    console.log('webpart.controls:', webpart.controls ? JSON.stringify(webpart.controls) : 'undefined');
+    
     // If in stacked mode, render all controls
     if (webpart.isStacked) {
       return (
         <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
           {webpart.controls && webpart.controls.length > 0 ? (
             <>
-              {webpart.controls.map((control, index) => (
-                <Box key={control.name || index} sx={{ mb: index < webpart.controls.length - 1 ? 1 : 0 }}>
-                  {renderSingleControl(control)}
-                  {index < webpart.controls.length - 1 && <Divider sx={{ my: 0.5 }} />}
-                </Box>
-              ))}
+              {webpart.controls.map((control, index) => {
+                console.log(`Rendering stacked control ${index}:`, JSON.stringify(control));
+                return (
+                  <Box key={control.name || index} sx={{ mb: index < webpart.controls.length - 1 ? 1 : 0 }}>
+                    {renderSingleControl(control)}
+                    {index < webpart.controls.length - 1 && <Divider sx={{ my: 0.5 }} />}
+                  </Box>
+                );
+              })}
               {isSelected && (
                 <Button 
                   startIcon={<AddIcon />} 
@@ -310,6 +328,7 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
                   sx={{ mt: 1, alignSelf: 'center' }}
                   onClick={(e) => {
                     e.stopPropagation();
+                    console.log('Add Control button clicked in stacked mode');
                     assignControl({ 
                       type: 'LabelControl', 
                       name: `label_${Date.now()}`,
