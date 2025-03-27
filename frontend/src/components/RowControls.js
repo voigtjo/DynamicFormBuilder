@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { IconButton, Box, Switch, Typography, Slider } from '@mui/material';
+import { IconButton, Box, Switch, Typography, Slider, Button, Tooltip } from '@mui/material';
 import DistributionInput from './DistributionInput';
 import FrameSettings from './FrameSettings';
 import VerticalSpacingControl from './VerticalSpacingControl';
+import CompressIcon from '@mui/icons-material/Compress';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import AddIcon from '@mui/icons-material/Add';
@@ -163,6 +164,26 @@ const RowControls = ({
                 });
               }}
             />
+          </Box>
+          
+          {/* Compact Button */}
+          <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 2 }}>
+            <Tooltip title="Make webparts more compact">
+              <Button
+                size="small"
+                variant="outlined"
+                startIcon={<CompressIcon />}
+                onClick={() => {
+                  updateRow({
+                    ...selectedRow,
+                    isCompact: !selectedRow.isCompact
+                  });
+                }}
+                color={selectedRow.isCompact ? "primary" : "inherit"}
+              >
+                Compact
+              </Button>
+            </Tooltip>
           </Box>
         </>
       )}

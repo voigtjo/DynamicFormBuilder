@@ -251,7 +251,7 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
       onClick={handleClick}
       sx={{
         border: isSelected ? '2px solid blue' : '1px solid #ccc',
-        padding: 1,
+        padding: 0.5, // Reduced from 1 to 0.5 (4px instead of 8px)
         borderRadius: '8px',
         cursor: 'pointer',
         height: '100%',

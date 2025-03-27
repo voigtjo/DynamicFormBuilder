@@ -47,6 +47,7 @@
           verticalSpacing: 1,
           distribution: '',
           distributionPercentages: [],
+          isCompact: false,
           frame: {
             enabled: false,
             style: 'solid',
@@ -116,6 +117,7 @@
         verticalSpacing: 1,
         distribution: '',
         distributionPercentages: [],
+        isCompact: false,
         frame: {
           enabled: false,
           style: 'solid',

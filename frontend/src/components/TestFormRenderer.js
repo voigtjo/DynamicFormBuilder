@@ -234,7 +234,7 @@ const TestFormRenderer = ({ form, formData, onFormDataChange }) => {
               return (
                 <Grid item xs={12} md={width} key={webpart.id || wpIndex}>
                   <Box sx={{ 
-                    p: row.verticalSpacing !== undefined ? row.verticalSpacing * 0.5 : 0.5, 
+                    p: row.isCompact ? 0 : (row.verticalSpacing !== undefined ? row.verticalSpacing * 0.5 : 0.5), 
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column',

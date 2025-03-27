@@ -46,6 +46,7 @@ const RowSchema = new mongoose.Schema({
   flexWebpartWidth: { type: Boolean, default: true }, // Flex or Fix Webpart Width mode
   height: { type: Number, default: 100 }, // Default height for rows
   verticalSpacing: { type: Number, default: 1 }, // Vertical spacing between controls (0-3)
+  isCompact: { type: Boolean, default: false }, // Compact mode for reduced padding
   distribution: { type: String, default: '' }, // Distribution string (e.g., "2:1")
   distributionPercentages: [{ type: Number }], // Calculated percentages for each webpart
   frame: {

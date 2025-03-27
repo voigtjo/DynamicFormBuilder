@@ -94,6 +94,7 @@ const Row = ({
                   : `repeat(${row.webparts.length}, 1fr)`
                 : 'repeat(12, 1fr)',
               gap: row.verticalSpacing !== undefined ? row.verticalSpacing * 0.5 : 1,
+              padding: row.isCompact ? 0 : undefined,
               height: '100%',
             }}
           >

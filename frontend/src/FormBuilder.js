@@ -96,6 +96,7 @@ function FormBuilder() {
           verticalSpacing: row.verticalSpacing !== undefined ? row.verticalSpacing : 1, // Default to 1 if missing
           distribution: row.distribution || '', // Ensure distribution property exists
           distributionPercentages: row.distributionPercentages || [], // Ensure distributionPercentages property exists
+          isCompact: row.isCompact || false, // Ensure isCompact property exists
           frame: row.frame || { enabled: false, style: 'solid', thickness: 'thin' }, // Ensure frame property exists
           webparts: row.webparts.map(webpart => {
             // Ensure control has a name if it exists

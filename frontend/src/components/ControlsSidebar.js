@@ -66,7 +66,7 @@ const ControlsSidebar = ({ assignControl }) => {
         paddingX: 1
       }}>
         <Typography variant="subtitle2" sx={{ width: '45%', textAlign: 'center' }}>
-          Drag & Drop
+          Drag &amp; Drop
         </Typography>
         <Typography variant="subtitle2" sx={{ width: '45%', textAlign: 'center' }}>
           Click to Add
