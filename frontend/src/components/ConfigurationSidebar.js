@@ -23,6 +23,9 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
+  FormControl,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -727,93 +730,41 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
       {/* Vertical Alignment */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, mt: 1 }}>
         <Typography variant="subtitle2">Vertical Alignment:</Typography>
-        <Box sx={{ display: 'flex', gap: 0.5 }}>
-          <Button 
-            variant={selectedWebpart?.verticalAlign === 'top' ? "contained" : "outlined"} 
-            color={selectedWebpart?.verticalAlign === 'top' ? "primary" : "inherit"}
-            size="small"
-            onClick={() => {
+        <FormControl size="small" sx={{ width: 120 }}>
+          <Select
+            value={selectedWebpart?.verticalAlign || 'center'}
+            onChange={(e) => {
               updateWebpart({
                 ...selectedWebpart,
-                verticalAlign: 'top'
+                verticalAlign: e.target.value
               });
             }}
           >
-            Top
-          </Button>
-          <Button 
-            variant={selectedWebpart?.verticalAlign === 'center' ? "contained" : "outlined"} 
-            color={selectedWebpart?.verticalAlign === 'center' ? "primary" : "inherit"}
-            size="small"
-            onClick={() => {
-              updateWebpart({
-                ...selectedWebpart,
-                verticalAlign: 'center'
-              });
-            }}
-          >
-            Center
-          </Button>
-          <Button 
-            variant={selectedWebpart?.verticalAlign === 'bottom' ? "contained" : "outlined"} 
-            color={selectedWebpart?.verticalAlign === 'bottom' ? "primary" : "inherit"}
-            size="small"
-            onClick={() => {
-              updateWebpart({
-                ...selectedWebpart,
-                verticalAlign: 'bottom'
-              });
-            }}
-          >
-            Bottom
-          </Button>
-        </Box>
+            <MenuItem value="top">Top</MenuItem>
+            <MenuItem value="center">Center</MenuItem>
+            <MenuItem value="bottom">Bottom</MenuItem>
+          </Select>
+        </FormControl>
       </Box>
       
       {/* Horizontal Alignment */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, mt: 1 }}>
         <Typography variant="subtitle2">Horizontal Alignment:</Typography>
-        <Box sx={{ display: 'flex', gap: 0.5 }}>
-          <Button 
-            variant={selectedWebpart?.horizontalAlign === 'left' ? "contained" : "outlined"} 
-            color={selectedWebpart?.horizontalAlign === 'left' ? "primary" : "inherit"}
-            size="small"
-            onClick={() => {
+        <FormControl size="small" sx={{ width: 120 }}>
+          <Select
+            value={selectedWebpart?.horizontalAlign || 'left'}
+            onChange={(e) => {
               updateWebpart({
                 ...selectedWebpart,
-                horizontalAlign: 'left'
+                horizontalAlign: e.target.value
               });
             }}
           >
-            Left
-          </Button>
-          <Button 
-            variant={selectedWebpart?.horizontalAlign === 'center' ? "contained" : "outlined"} 
-            color={selectedWebpart?.horizontalAlign === 'center' ? "primary" : "inherit"}
-            size="small"
-            onClick={() => {
-              updateWebpart({
-                ...selectedWebpart,
-                horizontalAlign: 'center'
-              });
-            }}
-          >
-            Center
-          </Button>
-          <Button 
-            variant={selectedWebpart?.horizontalAlign === 'right' ? "contained" : "outlined"} 
-            color={selectedWebpart?.horizontalAlign === 'right' ? "primary" : "inherit"}
-            size="small"
-            onClick={() => {
-              updateWebpart({
-                ...selectedWebpart,
-                horizontalAlign: 'right'
-              });
-            }}
-          >
-            Right
-          </Button>
-        </Box>
+            <MenuItem value="left">Left</MenuItem>
+            <MenuItem value="center">Center</MenuItem>
+            <MenuItem value="right">Right</MenuItem>
+          </Select>
+        </FormControl>
       </Box>
       
       {/* Stacked Mode Toggle */}

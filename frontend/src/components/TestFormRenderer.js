@@ -31,7 +31,7 @@ const TestFormRenderer = ({ form, formData, onFormDataChange }) => {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, width: '100%' }}>
           {webpart.controls.map((control, index) => (
             <Box key={control.name || index}>
-              {renderSingleControl(control)}
+              {renderSingleControl(control, webpart)}
               {index < webpart.controls.length - 1 && <Divider sx={{ my: 0.5 }} />}
             </Box>
           ))}
@@ -39,13 +39,13 @@ const TestFormRenderer = ({ form, formData, onFormDataChange }) => {
       );
     } else if (webpart.control) {
       // Handle single control
-      return renderSingleControl(webpart.control);
+      return renderSingleControl(webpart.control, webpart);
     }
     
     return null;
   };
 
-  const renderSingleControl = (control) => {
+  const renderSingleControl = (control, webpart) => {
     console.log('renderSingleControl called with:', control ? JSON.stringify(control) : 'null');
     
     if (!control) {
@@ -109,7 +109,13 @@ const TestFormRenderer = ({ form, formData, onFormDataChange }) => {
         
       case 'LabelControl':
         return (
-          <Typography variant="body1">
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              width: '100%',
+              textAlign: webpart?.horizontalAlign || 'left'
+            }}
+          >
             {control.props.label}
           </Typography>
         );

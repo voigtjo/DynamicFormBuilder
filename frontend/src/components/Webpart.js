@@ -168,8 +168,8 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
           <Box
             sx={{
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              alignItems: 'inherit', // Use inherit to respect parent's alignment
+              justifyContent: 'inherit', // Use inherit to respect parent's alignment
               height: '100%',
               width: '100%',
             }}
