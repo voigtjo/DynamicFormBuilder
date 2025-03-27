@@ -724,6 +724,24 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
         Configuration
       </Typography>
       
+      {/* Vertical Alignment */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, mt: 1 }}>
+        <Typography variant="subtitle2">Vertical Alignment:</Typography>
+        <Button 
+          variant={selectedWebpart?.verticalAlign === 'top' ? "contained" : "outlined"} 
+          color={selectedWebpart?.verticalAlign === 'top' ? "primary" : "inherit"}
+          size="small"
+          onClick={() => {
+            updateWebpart({
+              ...selectedWebpart,
+              verticalAlign: selectedWebpart?.verticalAlign === 'top' ? 'center' : 'top'
+            });
+          }}
+        >
+          {selectedWebpart?.verticalAlign === 'top' ? "Top" : "Center"}
+        </Button>
+      </Box>
+      
       {/* Stacked Mode Toggle */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, mt: 1 }}>
         <Typography variant="subtitle2">Stacked Controls Mode:</Typography>

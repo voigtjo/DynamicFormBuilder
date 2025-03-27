@@ -270,7 +270,7 @@ const TestFormRenderer = ({ form, formData, onFormDataChange }) => {
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
-                    justifyContent: 'center'
+                    justifyContent: webpart.verticalAlign === 'top' ? 'flex-start' : 'center'
                   }}>
                     {renderControl(webpart)}
                   </Box>

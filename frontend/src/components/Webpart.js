@@ -525,7 +525,7 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
         cursor: 'pointer',
         height: '100%',
         display: 'flex',
-        alignItems: 'center',
+        alignItems: webpart.verticalAlign === 'top' ? 'flex-start' : 'center',
         justifyContent: 'center',
         overflow: 'auto',
         boxSizing: 'border-box',
