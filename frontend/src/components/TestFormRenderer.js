@@ -46,7 +46,7 @@ const TestFormRenderer = ({ form, formData, onFormDataChange }) => {
   };
 
   const renderSingleControl = (control, webpart) => {
-    console.log('renderSingleControl called with:', control ? JSON.stringify(control) : 'null');
+    console.log('renderSingleControl called with control type:', control ? control.type : 'null');
     
     if (!control) {
       console.error('Control is null in renderSingleControl');

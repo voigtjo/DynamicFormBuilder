@@ -27,15 +27,14 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
   }));
 
   const assignControl = (control) => {
-    console.log('assignControl called with:', JSON.stringify(control));
-    console.log('Current webpart state:', JSON.stringify(webpart));
+    console.log('assignControl called with control type:', control.type);
     
     // Generate a unique name based on the control type and timestamp
     const uniqueName = `${control.type.toLowerCase()}_${Date.now()}`;
     
     // Ensure control has props
     if (!control.props) {
-      console.error('Control props is null or undefined:', control);
+      console.error('Control props is null or undefined');
       control.props = { label: control.label || 'New Control' };
     }
     
@@ -55,7 +54,7 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
           value: control.type === 'TextInputControl' ? '' : undefined,
         };
     
-    console.log('Created newControl:', JSON.stringify(newControl));
+    console.log('Created newControl with type:', newControl.type);
     
     // If webpart is already in stacked mode, add to controls array
     if (webpart.isStacked) {
