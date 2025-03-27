@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IconButton, Box, Switch, Typography, Slider } from '@mui/material';
+import { IconButton, Box, Switch, Typography, Slider, Button } from '@mui/material';
 import DistributionInput from './DistributionInput';
 import FrameSettings from './FrameSettings';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
