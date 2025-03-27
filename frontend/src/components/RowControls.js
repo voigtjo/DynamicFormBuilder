@@ -61,7 +61,7 @@ const RowControls = ({
   
 
   return (
-    <Box sx={{ display: 'flex', gap: 1, marginBottom: 2 }}>
+    <Box sx={{ display: 'flex', gap: 0.5, marginBottom: 0.5 }}>
       <IconButton
         onClick={() => moveRow(highlightedRowId, 'up')}
         disabled={!highlightedRowId}

@@ -43,7 +43,7 @@ const WebpartControls = ({
   };
 
   return (
-    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', marginBottom: 2 }}>
+    <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center', marginBottom: 0.5 }}>
       {/* Navigation Buttons */}
       <IconButton
         onClick={() => moveWebpart('left')}

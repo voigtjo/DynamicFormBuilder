@@ -42,16 +42,17 @@ const ControlsSidebar = ({ assignControl }) => {
         display: 'flex',
         flexDirection: 'column',
         overflowY: 'auto',
-        padding: 2,
+        padding: 1,
         borderRight: '1px solid #ccc',
       }}
     >
       <Typography
         variant="h6"
         sx={{
-          marginBottom: 2,
-          padding: '4px 8px',
+          marginBottom: 1,
+          padding: '2px 4px',
           borderBottom: '2px solid #ccc',
+          fontSize: '1rem'
         }}
       >
         Controls

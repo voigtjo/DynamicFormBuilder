@@ -285,58 +285,61 @@
     };
 
     return (
-      <Box sx={{ display: 'flex', height: '100vh' }}>
+      <Box sx={{ display: 'flex', height: 'calc(100vh - 20px)' }}>
         {/* Left Sidebar */}
-        <Box sx={{ width: '16.66%', backgroundColor: '#f5f5f5', borderRight: '1px solid #ccc', padding: 2 }}>
+        <Box sx={{ width: '16.66%', backgroundColor: '#f5f5f5', borderRight: '1px solid #ccc', padding: 1 }}>
           <ControlsSidebar assignControl={(control) => assignControlToWebpart(control)} />
         </Box>
 
         {/* Main Content */}
-        <Box sx={{ flexGrow: 1, padding: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
-            <RowControls
-              highlightedRowId={highlightedRowId}
-              moveRow={moveRow}
-              addRow={addRow}
-              deleteRow={deleteRow}
-              setHighlightedRowId={setHighlightedRowId}
-              updateRow={updateRow} // Pass updateRow here
-              rows={layout.rows}
-            />
-
-            <WebpartControls
-              selectedWebpartId={selectedWebpartId}
-              moveWebpart={moveWebpart}
-              deleteSelectedWebpart={deleteSelectedWebpart}
-              setSelectedWebpartId={setSelectedWebpartId}
-              addWebpartToRow={(rowId) => {
-                const updatedRows = layout.rows.map((row) =>
-                  row.rowId === rowId
-                    ? {
-                        ...row,
-                        webparts: [
-                          ...row.webparts,
-                          { id: `webpart-${Date.now()}`, control: null },
-                        ],
-                      }
-                    : row
-                );
-                setLayout({ ...layout, rows: updatedRows });
-              }}
-              updateWebpartWidth={(webpartId, newWidth) => {
-                const updatedRows = layout.rows.map((row) => ({
-                  ...row,
-                  webparts: row.webparts.map((webpart) =>
-                    webpart.id === webpartId ? { ...webpart, width: newWidth } : webpart
-                  ),
-                }));
-                setLayout({ ...layout, rows: updatedRows });
-              }}
-              highlightedRowId={highlightedRowId}
-              layout={layout}
-              setLayout={setLayout} // Pass setLayout here
-            />
-
+        <Box sx={{ flexGrow: 1, padding: 1 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', marginBottom: 1 }}>
+            <Box sx={{ marginBottom: 0.5 }}>
+              <RowControls
+                highlightedRowId={highlightedRowId}
+                moveRow={moveRow}
+                addRow={addRow}
+                deleteRow={deleteRow}
+                setHighlightedRowId={setHighlightedRowId}
+                updateRow={updateRow} // Pass updateRow here
+                rows={layout.rows}
+              />
+            </Box>
+            
+            <Box>
+              <WebpartControls
+                selectedWebpartId={selectedWebpartId}
+                moveWebpart={moveWebpart}
+                deleteSelectedWebpart={deleteSelectedWebpart}
+                setSelectedWebpartId={setSelectedWebpartId}
+                addWebpartToRow={(rowId) => {
+                  const updatedRows = layout.rows.map((row) =>
+                    row.rowId === rowId
+                      ? {
+                          ...row,
+                          webparts: [
+                            ...row.webparts,
+                            { id: `webpart-${Date.now()}`, control: null },
+                          ],
+                        }
+                      : row
+                  );
+                  setLayout({ ...layout, rows: updatedRows });
+                }}
+                updateWebpartWidth={(webpartId, newWidth) => {
+                  const updatedRows = layout.rows.map((row) => ({
+                    ...row,
+                    webparts: row.webparts.map((webpart) =>
+                      webpart.id === webpartId ? { ...webpart, width: newWidth } : webpart
+                    ),
+                  }));
+                  setLayout({ ...layout, rows: updatedRows });
+                }}
+                highlightedRowId={highlightedRowId}
+                layout={layout}
+                setLayout={setLayout} // Pass setLayout here
+              />
+            </Box>
           </Box>
 
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
@@ -374,7 +377,7 @@
         </Box>
 
         {/* Right Sidebar */}
-        <Box sx={{ width: '16.66%', backgroundColor: '#f5f5f5', borderLeft: '1px solid #ccc', padding: 2 }}>
+        <Box sx={{ width: '16.66%', backgroundColor: '#f5f5f5', borderLeft: '1px solid #ccc', padding: 1 }}>
           <ConfigurationSidebar
             selectedWebpart={layout.rows
               .flatMap((row) => row.webparts)
