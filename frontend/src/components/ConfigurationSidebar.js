@@ -197,7 +197,9 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
   };
 
   const renderMarkdownDialog = () => {
-    const markdownContent = selectedWebpart.control?.props?.markdownContent || '';
+    // Get the control to use (either the selected control in stacked mode or the single control)
+    const controlToUse = isStacked ? selectedControl : selectedWebpart.control;
+    const markdownContent = controlToUse?.props?.markdownContent || '';
 
     return (
       <Dialog
@@ -221,7 +223,33 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
             </Typography>
             <TextField
               value={markdownContent}
-              onChange={(e) => handleMarkdownContentChange(e)}
+              onChange={(e) => {
+                if (isStacked) {
+                  const newControls = [...controls];
+                  newControls[selectedControlIndex] = {
+                    ...controlToUse,
+                    props: {
+                      ...controlToUse.props,
+                      markdownContent: e.target.value,
+                    },
+                  };
+                  updateWebpart({
+                    ...selectedWebpart,
+                    controls: newControls
+                  });
+                } else {
+                  updateWebpart({
+                    ...selectedWebpart,
+                    control: {
+                      ...selectedWebpart.control,
+                      props: {
+                        ...selectedWebpart.control.props,
+                        markdownContent: e.target.value,
+                      },
+                    },
+                  });
+                }
+              }}
               multiline
               rows={15}
               fullWidth
@@ -428,16 +456,13 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
                     
                     const reader = new FileReader();
                     reader.onload = (event) => {
-                      updateWebpart({
-                        ...selectedWebpart,
-                        control: {
-                          ...selectedWebpart.control,
-                          props: {
-                            ...selectedWebpart.control.props,
-                            imageData: event.target.result,
-                            imageType: file.type,
-                            imageSize: file.size,
-                          },
+                      updateControl({
+                        ...controlToConfig,
+                        props: {
+                          ...controlToConfig.props,
+                          imageData: event.target.result,
+                          imageType: file.type,
+                          imageSize: file.size,
                         },
                       });
                     };
@@ -446,14 +471,14 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
                 />
               </Button>
               
-              {selectedWebpart.control?.props?.imageData && (
+              {controlToConfig.props?.imageData && (
                 <Box>
                   <Typography variant="body2" gutterBottom>
                     Preview:
                   </Typography>
                   <Box 
                     component="img" 
-                    src={selectedWebpart.control.props.imageData}
+                    src={controlToConfig.props.imageData}
                     alt="Uploaded image"
                     sx={{ 
                       maxWidth: '100%', 
@@ -464,7 +489,7 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
                     }}
                   />
                   <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-                    Size: {Math.round(selectedWebpart.control.props.imageSize / 1024)} KB
+                    Size: {Math.round(controlToConfig.props.imageSize / 1024)} KB
                   </Typography>
                   <Button 
                     variant="outlined" 
@@ -472,16 +497,13 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
                     size="small"
                     sx={{ mt: 1 }}
                     onClick={() => {
-                      updateWebpart({
-                        ...selectedWebpart,
-                        control: {
-                          ...selectedWebpart.control,
-                          props: {
-                            ...selectedWebpart.control.props,
-                            imageData: '',
-                            imageType: '',
-                            imageSize: 0,
-                          },
+                      updateControl({
+                        ...controlToConfig,
+                        props: {
+                          ...controlToConfig.props,
+                          imageData: '',
+                          imageType: '',
+                          imageSize: 0,
                         },
                       });
                     }}
@@ -600,11 +622,19 @@ const ConfigurationSidebar = ({ selectedWebpart, updateWebpart }) => {
       default:
         return (
           <Box>
-            {selectedWebpart.control ? commonFields : null}
+            {controlToConfig ? commonFields : null}
             <TextField
               label="Label"
-              value={selectedWebpart.control?.props?.label || ''}
-              onChange={handleLabelChange}
+              value={controlToConfig?.props?.label || ''}
+              onChange={(e) => {
+                updateControl({
+                  ...controlToConfig,
+                  props: {
+                    ...controlToConfig.props,
+                    label: e.target.value,
+                  },
+                });
+              }}
               fullWidth
               variant="outlined"
               sx={{ mt: 2 }}

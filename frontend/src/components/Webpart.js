@@ -419,11 +419,37 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
                   sx={{ mt: 1, alignSelf: 'center' }}
                   onClick={(e) => {
                     e.stopPropagation();
+                    // Open a dialog to select control type instead of directly adding a label
+                    const controlType = prompt(
+                      'Select control type:\n1. Label\n2. Text Input\n3. Integer Input\n4. Double Input\n5. Currency Input\n6. Checkbox\n7. Date Selector\n8. Dropdown\n9. Markdown\n10. Image',
+                      '1'
+                    );
+                    
+                    if (!controlType) return;
+                    
+                    const controlTypes = {
+                      '1': 'LabelControl',
+                      '2': 'TextInputControl',
+                      '3': 'IntegerInputField',
+                      '4': 'DoubleInputField',
+                      '5': 'CurrencyInputField',
+                      '6': 'BooleanCheckbox',
+                      '7': 'Dateselector',
+                      '8': 'DropDownField',
+                      '9': 'MarkdownControl',
+                      '10': 'ImageControl'
+                    };
+                    
+                    const selectedType = controlTypes[controlType] || 'LabelControl';
+                    const label = prompt('Enter label for the control:', 'New Control');
+                    
+                    if (label === null) return;
+                    
                     console.log('Add Control button clicked in stacked mode');
                     assignControl({ 
-                      type: 'LabelControl', 
-                      name: `label_${Date.now()}`,
-                      props: { label: 'New Label' }
+                      type: selectedType, 
+                      name: `${selectedType.toLowerCase()}_${Date.now()}`,
+                      props: { label: label || 'New Control' }
                     });
                   }}
                 >
@@ -442,10 +468,36 @@ const Webpart = ({ webpart, updateWebpart, selectWebpart, isSelected }) => {
                   sx={{ mt: 1, alignSelf: 'center' }}
                   onClick={(e) => {
                     e.stopPropagation();
+                    // Open a dialog to select control type instead of directly adding a label
+                    const controlType = prompt(
+                      'Select control type:\n1. Label\n2. Text Input\n3. Integer Input\n4. Double Input\n5. Currency Input\n6. Checkbox\n7. Date Selector\n8. Dropdown\n9. Markdown\n10. Image',
+                      '1'
+                    );
+                    
+                    if (!controlType) return;
+                    
+                    const controlTypes = {
+                      '1': 'LabelControl',
+                      '2': 'TextInputControl',
+                      '3': 'IntegerInputField',
+                      '4': 'DoubleInputField',
+                      '5': 'CurrencyInputField',
+                      '6': 'BooleanCheckbox',
+                      '7': 'Dateselector',
+                      '8': 'DropDownField',
+                      '9': 'MarkdownControl',
+                      '10': 'ImageControl'
+                    };
+                    
+                    const selectedType = controlTypes[controlType] || 'LabelControl';
+                    const label = prompt('Enter label for the control:', 'New Control');
+                    
+                    if (label === null) return;
+                    
                     assignControl({ 
-                      type: 'LabelControl', 
-                      name: `label_${Date.now()}`,
-                      props: { label: 'New Label' }
+                      type: selectedType, 
+                      name: `${selectedType.toLowerCase()}_${Date.now()}`,
+                      props: { label: label || 'New Control' }
                     });
                   }}
                 >
