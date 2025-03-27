@@ -88,11 +88,12 @@ function FormBuilder() {
     try {
       const loadedForm = await fetchForm(name);
       
-      // Ensure each row has a height property, distribution settings, frame settings, and each control has a name
+      // Ensure each row has a height property, vertical spacing, distribution settings, frame settings, and each control has a name
       if (loadedForm && loadedForm.rows) {
         loadedForm.rows = loadedForm.rows.map(row => ({
           ...row,
           height: row.height || 100, // Default to 100 if height is missing
+          verticalSpacing: row.verticalSpacing !== undefined ? row.verticalSpacing : 1, // Default to 1 if missing
           distribution: row.distribution || '', // Ensure distribution property exists
           distributionPercentages: row.distributionPercentages || [], // Ensure distributionPercentages property exists
           frame: row.frame || { enabled: false, style: 'solid', thickness: 'thin' }, // Ensure frame property exists

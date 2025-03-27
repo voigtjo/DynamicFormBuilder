@@ -44,6 +44,7 @@
           rowId: `row-${Date.now()}`, 
           webparts: [], 
           height: 100,
+          verticalSpacing: 1,
           distribution: '',
           distributionPercentages: [],
           frame: {
@@ -112,6 +113,7 @@
         rowId: `row-${Date.now()}`, 
         webparts: [], 
         height: 100,
+        verticalSpacing: 1,
         distribution: '',
         distributionPercentages: [],
         frame: {

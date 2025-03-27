@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { IconButton, Box, Switch, Typography, Slider } from '@mui/material';
 import DistributionInput from './DistributionInput';
 import FrameSettings from './FrameSettings';
+import VerticalSpacingControl from './VerticalSpacingControl';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import AddIcon from '@mui/icons-material/Add';
@@ -145,6 +146,20 @@ const RowControls = ({
                 updateRow({
                   ...selectedRow,
                   frame: frameSettings
+                });
+              }}
+            />
+          </Box>
+          
+          {/* Vertical Spacing Control */}
+          <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 2 }}>
+            <VerticalSpacingControl
+              rowId={selectedRow.rowId}
+              verticalSpacing={selectedRow.verticalSpacing}
+              onSpacingChange={(rowId, spacing) => {
+                updateRow({
+                  ...selectedRow,
+                  verticalSpacing: spacing
                 });
               }}
             />

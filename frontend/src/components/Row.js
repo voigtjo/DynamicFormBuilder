@@ -93,7 +93,7 @@ const Row = ({
                   ? row.distributionPercentages.map(p => `${p}%`).join(' ')
                   : `repeat(${row.webparts.length}, 1fr)`
                 : 'repeat(12, 1fr)',
-              gap: 2,
+              gap: row.verticalSpacing !== undefined ? row.verticalSpacing * 0.5 : 1,
               height: '100%',
             }}
           >
